@@ -26,6 +26,24 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const mailOptions = {
+        from: process.env.EMAIL_HOST_USER,
+        to: user.email,
+        subject: "Password Reset Request",
+        text: `Click here to reset your password: ${url}`,
+      };
+      await sendMail(mailOptions);
+    },
+    onPasswordReset: async ({ user }, request) => {
+      const mailOptions = {
+        from: process.env.EMAIL_HOST_USER,
+        to: user.email,
+        subject: "Password Reset successfull",
+        text: "Your Password has been reset successfully.",
+      };
+      await sendMail(mailOptions);
+    },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
