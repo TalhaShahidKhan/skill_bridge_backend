@@ -1,0 +1,24 @@
+model Student {
+    studentId  String   @id @default(uuid())
+    class      String
+    institute  String
+    address    String
+    phone      String
+    profilePic String?
+    bio        String?
+    group      Group    @default(NONE)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    userId     String   @unique
+    user       User     @relation(fields: [userId], references: [id])
+    bookings Booking[]
+    reviews Review[]
+    @@map("students")
+}
+
+enum Group {
+    NONE
+    SCIENCE
+    HUMANITIES
+    BUSINESS_STUDIES
+}

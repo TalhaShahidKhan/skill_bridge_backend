@@ -1,0 +1,26 @@
+enum BookingStatus {
+    CONFIRMED
+    COMPLETED
+    CANCELLED
+}
+
+model Booking {
+    bookingId String @id @default(uuid())
+    studentId String
+    student Student @relation(fields: [studentId], references: [studentId])
+    tutorId String
+    tutor Tutor @relation(fields: [tutorId], references: [tutorId])
+    date DateTime
+    time DateTime
+    duration Int
+    status BookingStatus @default(CONFIRMED)
+    notes String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    review Review?
+    @@index([date])
+    @@index([status])
+    @@index([studentId])
+    @@index([tutorId])
+    @@map("bookings")
+}
