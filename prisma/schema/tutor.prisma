@@ -8,6 +8,7 @@ model Tutor {
     bio        String?
     institute  String?
     group      Group
+    isFeatured Boolean @default(false)
     isAvailable Boolean @default(true)
     availableFrom DateTime?
     availableTo DateTime?
@@ -15,9 +16,9 @@ model Tutor {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     userId     String   @unique
-    user       User     @relation(fields: [userId], references: [id])
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     categoryId String
-    category Category @relation(fields: [categoryId], references: [categoryId])
+    category Category @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
     bookings Booking[]
     reviews Review[]
     @@map("tutors")

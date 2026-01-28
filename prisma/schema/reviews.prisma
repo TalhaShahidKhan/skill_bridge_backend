@@ -1,11 +1,11 @@
 model Review {
     reviewId String @id @default(uuid())
     studentId String
-    student Student @relation(fields: [studentId], references: [studentId])
+    student Student @relation(fields: [studentId], references: [studentId], onDelete: Cascade)
     tutorId String
-    tutor Tutor @relation(fields: [tutorId], references: [tutorId])
+    tutor Tutor @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)
     bookingId String @unique
-    booking Booking @relation(fields: [bookingId], references: [bookingId])
+    booking Booking @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
     rating Int
     comment String?
     createdAt DateTime @default(now())

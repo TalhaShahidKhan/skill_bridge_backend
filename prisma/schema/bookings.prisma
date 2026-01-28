@@ -7,9 +7,9 @@ enum BookingStatus {
 model Booking {
     bookingId String @id @default(uuid())
     studentId String
-    student Student @relation(fields: [studentId], references: [studentId])
+    student Student @relation(fields: [studentId], references: [studentId], onDelete: Cascade)
     tutorId String
-    tutor Tutor @relation(fields: [tutorId], references: [tutorId])
+    tutor Tutor @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)
     date DateTime
     time DateTime
     duration Int

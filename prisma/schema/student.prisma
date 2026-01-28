@@ -10,7 +10,7 @@ model Student {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     userId     String   @unique
-    user       User     @relation(fields: [userId], references: [id])
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     bookings Booking[]
     reviews Review[]
     @@map("students")
