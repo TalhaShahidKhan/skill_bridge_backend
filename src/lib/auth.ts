@@ -4,11 +4,15 @@ import { sendMail } from "../utils/sendMail";
 import { UserRole, UserStatus } from "./constants";
 import { prisma } from "./prisma";
 
+if (!process.env.APP_URL) {
+  console.warn("APP_URL is not defined. Authentication might fail.");
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: [process.env.APP_URL!],
+  trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
   user: {
     additionalFields: {
       role: {
