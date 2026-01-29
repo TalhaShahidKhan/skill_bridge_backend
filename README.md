@@ -19,6 +19,7 @@
   - [Admin Features](#admin-features)
 - [API Overview](#api-overview)
 - [Getting Started](#getting-started)
+- [Deploy on Vercel](#deploy-on-vercel)
 - [Environment](#environment)
 - [Scripts](#scripts)
 - [Data Model](#data-model)
@@ -237,6 +238,68 @@ The platform supports:
 
 5. **Optional: seed admin**
    - `npm run seedAdmin` – seeds an initial admin user (script: `src/scripts/seedAdmin.ts`).
+
+---
+
+## Deploy on Vercel
+
+The API can run on Vercel as a serverless function. The repo includes `vercel.json` and `api/index.ts` for this.
+
+### 1. Prerequisites
+
+- A **PostgreSQL** database (e.g. [Vercel Postgres](https://vercel.com/storage/postgres), [Neon](https://neon.tech), [Supabase](https://supabase.com), or Railway).
+- Your database **migrations** applied (run `npx prisma migrate deploy` against the production DB before or after first deploy).
+
+### 2. Push code to GitHub
+
+Ensure your project is in a Git repo and pushed to GitHub (or another [supported Git provider](https://vercel.com/docs/concepts/git)).
+
+### 3. Import the project on Vercel
+
+1. Go to [vercel.com](https://vercel.com) and sign in.
+2. Click **Add New…** → **Project**.
+3. Import your **skill_bridge_backend** repository.
+4. Leave **Framework Preset** as “Other” (or “Vercel” default); the `vercel.json` and `api/` setup will be used.
+
+### 4. Set environment variables
+
+In the Vercel project: **Settings** → **Environment Variables**. Add at least:
+
+| Variable       | Description                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| `DATABASE_URL` | PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/db?sslmode=require`). |
+| `APP_URL`      | Frontend URL for CORS and auth (e.g. `https://your-app.vercel.app` or your custom domain). |
+
+Add any others your app uses (e.g. email: `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, etc.) for the same environments (Production, Preview, Development) you need.
+
+### 5. Deploy
+
+Click **Deploy**. Vercel will:
+
+- Run `npm install` (and thus `postinstall` → `prisma generate`).
+- Build the serverless function from `api/index.ts` with `@vercel/node`.
+- Route all requests to that function via the `routes` in `vercel.json`.
+
+Your API will be available at:
+
+- **Production**: `https://<your-project>.vercel.app`
+- **Preview**: each branch/PR gets its own URL.
+
+### 6. After first deploy (migrations)
+
+If you didn’t run migrations earlier, run them from your machine against the production DB:
+
+```bash
+DATABASE_URL="your-production-database-url" npx prisma migrate deploy
+```
+
+(Or use a one-off script/CI step with the same `DATABASE_URL`.)
+
+### Notes
+
+- **Cold starts**: Serverless functions may have a short delay on first request; subsequent requests are faster.
+- **Database connections**: For high traffic, consider connection pooling (e.g. [Prisma Data Proxy](https://www.prisma.io/docs/guides/prisma-data-platform/data-proxy) or a pooled DB URL from your provider).
+- **CORS**: Set `APP_URL` in Vercel to your frontend origin so auth and API calls work from the browser.
 
 ---
 
