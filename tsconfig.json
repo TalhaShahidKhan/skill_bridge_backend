@@ -35,12 +35,12 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "esnext",
+    "target": "es2020",
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "api/**/*"],
   "exclude": ["node_modules", "dist", "generated"]
 }
