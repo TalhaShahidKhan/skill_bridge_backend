@@ -28,6 +28,10 @@ app.use("/api/v1/admin", adminRouter);
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+// Vercel mounts the serverless function at /api, so root requests arrive as /api
+app.get("/api", (req, res) => {
+  res.send("Hello World");
+});
 // 404 handler
 app.use((_req, res) => {
   res.status(404).json({
