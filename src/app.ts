@@ -25,6 +25,9 @@ app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/tutor", tutorRouter);
 app.use("/api/v1/admin", adminRouter);
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 // 404 handler
 app.use((_req, res) => {
   res.status(404).json({
