@@ -1,4 +1,4 @@
-import app from "./app";
+import app from ".";
 import { prisma } from "./lib/prisma";
 
 const PORT = process.env.PORT || 3000;
