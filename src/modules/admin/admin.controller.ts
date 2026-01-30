@@ -178,6 +178,29 @@ export const deleteReview = asyncHandler(async (req, res) => {
   res.json({ success: true, data: review });
 });
 
+export const listBookings = asyncHandler(async (req, res) => {
+  const page = toNumber(req.query.page);
+  const limit = toNumber(req.query.limit);
+  const status = asString(req.query.status);
+  const studentId = asString(req.query.studentId);
+  const tutorId = asString(req.query.tutorId);
+  const from = toDate(req.query.from);
+  const to = toDate(req.query.to);
+  const search = asString(req.query.search);
+
+  const result = await adminService.listBookings({
+    ...(page !== undefined ? { page } : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(status !== undefined ? { status } : {}),
+    ...(studentId !== undefined ? { studentId } : {}),
+    ...(tutorId !== undefined ? { tutorId } : {}),
+    ...(from !== undefined ? { from } : {}),
+    ...(to !== undefined ? { to } : {}),
+    ...(search !== undefined ? { search } : {}),
+  });
+  res.json({ success: true, ...result });
+});
+
 export const setTutorFeatured = asyncHandler(async (req, res) => {
   const tutorId = getParam(req, "id") ?? getParam(req, "tutorId");
   const isFeatured = req.body?.isFeatured;

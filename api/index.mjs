@@ -505,6 +505,59 @@ async function listReviews(input = {}) {
 async function deleteReview(reviewId) {
   return prisma.review.delete({ where: { reviewId } });
 }
+async function listBookings(input = {}) {
+  const { page, limit, skip } = normalizePagination(input);
+  const where = {
+    ...input.status ? { status: input.status } : {},
+    ...input.studentId ? { studentId: input.studentId } : {},
+    ...input.tutorId ? { tutorId: input.tutorId } : {},
+    ...(input.from || input.to) && {
+      date: {
+        ...input.from ? { gte: input.from } : {},
+        ...input.to ? { lte: input.to } : {}
+      }
+    },
+    ...input.search?.trim() ? {
+      OR: [
+        {
+          student: {
+            user: {
+              OR: [
+                { name: { contains: input.search, mode: "insensitive" } },
+                { email: { contains: input.search, mode: "insensitive" } }
+              ]
+            }
+          }
+        },
+        {
+          tutor: {
+            user: {
+              OR: [
+                { name: { contains: input.search, mode: "insensitive" } },
+                { email: { contains: input.search, mode: "insensitive" } }
+              ]
+            }
+          }
+        }
+      ]
+    } : {}
+  };
+  const [total, bookings] = await prisma.$transaction([
+    prisma.booking.count({ where }),
+    prisma.booking.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip,
+      take: limit,
+      include: {
+        student: { include: { user: true } },
+        tutor: { include: { user: true, category: true } },
+        review: true
+      }
+    })
+  ]);
+  return { meta: toPageMeta(page, limit, total), data: bookings };
+}
 async function setTutorFeatured(tutorId, isFeatured) {
   return prisma.tutor.update({
     where: { tutorId },
@@ -809,6 +862,27 @@ var deleteReview2 = asyncHandler(async (req, res) => {
   const review = await deleteReview(reviewId);
   res.json({ success: true, data: review });
 });
+var listBookings2 = asyncHandler(async (req, res) => {
+  const page = toNumber(req.query.page);
+  const limit = toNumber(req.query.limit);
+  const status = asString(req.query.status);
+  const studentId = asString(req.query.studentId);
+  const tutorId = asString(req.query.tutorId);
+  const from = toDate(req.query.from);
+  const to = toDate(req.query.to);
+  const search = asString(req.query.search);
+  const result = await listBookings({
+    ...page !== void 0 ? { page } : {},
+    ...limit !== void 0 ? { limit } : {},
+    ...status !== void 0 ? { status } : {},
+    ...studentId !== void 0 ? { studentId } : {},
+    ...tutorId !== void 0 ? { tutorId } : {},
+    ...from !== void 0 ? { from } : {},
+    ...to !== void 0 ? { to } : {},
+    ...search !== void 0 ? { search } : {}
+  });
+  res.json({ success: true, ...result });
+});
 var setTutorFeatured2 = asyncHandler(async (req, res) => {
   const tutorId = getParam(req, "id") ?? getParam(req, "tutorId");
   const isFeatured = req.body?.isFeatured;
@@ -887,6 +961,12 @@ router.delete(
   requireAuth,
   requireAdmin,
   deleteReview2
+);
+router.get(
+  "/bookings",
+  requireAuth,
+  requireAdmin,
+  listBookings2
 );
 router.patch(
   "/tutors/:id/featured",
@@ -1499,6 +1579,13 @@ async function getMyTutorProfile(userId) {
   return { ...tutor, avgRating, reviewsCount: ratings.length };
 }
 async function upsertMyTutorProfile(userId, input) {
+  const category = await prisma.category.findUnique({
+    where: { categoryId: input.categoryId },
+    select: { categoryId: true }
+  });
+  if (!category) {
+    throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+  }
   return prisma.tutor.upsert({
     where: { userId },
     create: {
@@ -1539,6 +1626,15 @@ async function updateMyTutorProfile(userId, input) {
     throw httpErrors.notFound(
       "Tutor profile not found. Create your profile first."
     );
+  }
+  if (typeof input.categoryId === "string") {
+    const category = await prisma.category.findUnique({
+      where: { categoryId: input.categoryId },
+      select: { categoryId: true }
+    });
+    if (!category) {
+      throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+    }
   }
   return prisma.tutor.update({
     where: { userId },
@@ -1940,7 +2036,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.all("/api/auth/*splat", toNodeHandler(auth));
+app.all("/api/v1/auth/*splat", toNodeHandler(auth));
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/tutor", tutorRouter);
 app.use("/api/v1/admin", adminRouter);

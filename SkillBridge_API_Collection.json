@@ -1,0 +1,1130 @@
+{
+  "info": {
+    "_postman_id": "skillbridge-comprehensive-collection",
+    "name": "SkillBridge Complete API",
+    "description": "Comprehensive Postman collection for SkillBridge Backend. Includes all Auth, Student, Tutor, and Admin routes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication (Better Auth)",
+      "description": "All authentication routes handled by better-auth.",
+      "item": [
+        {
+          "name": "Sign Up (Email)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\",\n    \"image\": \"https://example.com/image.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-up/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-up", "email"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign In (Email)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{adminEmail}}\",\n    \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-in/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-in", "email"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign Out",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-out"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/get-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "get-session"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-email?token={{verificationToken}}&callbackUrl={{baseUrl}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{verificationToken}}"
+                },
+                {
+                  "key": "callbackUrl",
+                  "value": "{{baseUrl}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forget-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "forget-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newPassword\": \"NewPassword123!\",\n    \"token\": \"{{resetToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "reset-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newEmail\": \"new-email@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "change-email"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newPassword\": \"NewerPassword123!\",\n    \"currentPassword\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "change-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Name\",\n    \"image\": \"https://new-image-url.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/update-user",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "update-user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/list-sessions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "list-sessions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Session",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"{{sessionToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/revoke-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "revoke-session"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke All Sessions",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/revoke-other-sessions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "revoke-other-sessions"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Student Module",
+      "item": [
+        {
+          "name": "Public Endpoints",
+          "item": [
+            {
+              "name": "Browse Tutors",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/tutors?search=math&categoryId={{categoryId}}&group=SCIENCE&minPricePerDay=100&maxPricePerDay=1000&onlyAvailable=true&onlyFeatured=false",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "tutors"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "math"
+                    },
+                    {
+                      "key": "categoryId",
+                      "value": "{{categoryId}}"
+                    },
+                    {
+                      "key": "group",
+                      "value": "SCIENCE"
+                    },
+                    {
+                      "key": "minPricePerDay",
+                      "value": "100"
+                    },
+                    {
+                      "key": "maxPricePerDay",
+                      "value": "1000"
+                    },
+                    {
+                      "key": "onlyAvailable",
+                      "value": "true"
+                    },
+                    {
+                      "key": "onlyFeatured",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Tutor Details",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/tutors/{{tutorId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "tutors", "{{tutorId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "List Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "categories"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Private Endpoints (Authenticated Student)",
+          "item": [
+            {
+              "name": "Get My Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "me"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Upsert My Profile (Full)",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"class\": \"10\",\n    \"institute\": \"Global Academy\",\n    \"address\": \"123 Student Lane\",\n    \"phone\": \"01700000000\",\n    \"bio\": \"Eager to learn physics and math.\",\n    \"group\": \"SCIENCE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "me"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update My Profile (Partial)",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"class\": \"11\",\n    \"bio\": \"Updated student bio.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "me"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Booking",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"tutorId\": \"{{tutorId}}\",\n    \"date\": \"2026-02-15T00:00:00.000Z\",\n    \"time\": \"2026-02-15T14:30:00.000Z\",\n    \"duration\": 2,\n    \"notes\": \"Topics: Trigonometry and Algebra.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/bookings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "bookings"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "List My Bookings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/bookings?status=CONFIRMED&page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "bookings"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "CONFIRMED"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Booking Details",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/bookings/{{bookingId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "bookings", "{{bookingId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel Booking",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/bookings/{{bookingId}}/cancel",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "api",
+                    "student",
+                    "bookings",
+                    "{{bookingId}}",
+                    "cancel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Review",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"bookingId\": \"{{bookingId}}\",\n    \"rating\": 5,\n    \"comment\": \"Amazing teaching method! Very helpful.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/reviews",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "reviews"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "List My Reviews",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/student/reviews",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "student", "reviews"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Tutor Module",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upsert My Profile (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"subject\": \"Advanced Calculus\",\n    \"experience\": 8,\n    \"address\": \"789 Professor Road\",\n    \"phone\": \"01899999999\",\n    \"bio\": \"Specialized in high school and college mathematics.\",\n    \"group\": \"SCIENCE\",\n    \"categoryId\": \"{{categoryId}}\",\n    \"pricePerDay\": 800\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pricePerDay\": 900,\n    \"bio\": \"Updated tutor bio with new credentials.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set My Availability",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isAvailable\": true,\n    \"availableFrom\": \"2026-02-01T08:00:00.000Z\",\n    \"availableTo\": \"2026-06-30T18:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "availability"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List My Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/sessions?status=CONFIRMED&page=1&limit=10&studentSearch=John",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "sessions"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CONFIRMED"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "studentSearch",
+                  "value": "John"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/sessions/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "sessions", "{{bookingId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Session Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/sessions/{{bookingId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "sessions", "{{bookingId}}", "complete"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List My Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/reviews?minRating=4&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "reviews"],
+              "query": [
+                {
+                  "key": "minRating",
+                  "value": "4"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "dashboard"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Admin Module",
+      "item": [
+        {
+          "name": "Users Management",
+          "item": [
+            {
+              "name": "List Users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users?role=TUTOR&status=ACTIVE&search=talha&page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users"],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "TUTOR"
+                    },
+                    {
+                      "key": "status",
+                      "value": "ACTIVE"
+                    },
+                    {
+                      "key": "search",
+                      "value": "talha"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get User Details",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set User Role",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"role\": \"TUTOR\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}/role",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}", "role"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set User Status",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"status\": \"SUSPENDED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}", "status"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Suspend User",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}/suspend",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}", "suspend"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Activate User",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}/activate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}", "activate"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User (Hard)",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "users", "{{userId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Content & Bookings Moderation",
+          "item": [
+            {
+              "name": "List All Bookings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/bookings?status=CONFIRMED&search=John&page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "bookings"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "CONFIRMED"
+                    },
+                    {
+                      "key": "search",
+                      "value": "John"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "List All Reviews",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/reviews?minRating=1&maxRating=5",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "reviews"],
+                  "query": [
+                    {
+                      "key": "minRating",
+                      "value": "1"
+                    },
+                    {
+                      "key": "maxRating",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Review",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/reviews/{{reviewId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "reviews", "{{reviewId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Tutor Featured",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"isFeatured\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/tutors/{{tutorId}}/featured",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "tutors", "{{tutorId}}", "featured"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Tutor Availability",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"isAvailable\": true,\n    \"availableFrom\": \"2026-02-01T00:00:00.000Z\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/tutors/{{tutorId}}/availability",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "api",
+                    "admin",
+                    "tutors",
+                    "{{tutorId}}",
+                    "availability"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Category Management",
+          "item": [
+            {
+              "name": "Create Category",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"O-Level\",\n    \"subjects\": [\"Math\", \"Physics\", \"Chemistry\", \"Biology\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Cambridge O-Level\",\n    \"subjects\": [\"Advanced Math\", \"Physics\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories", "{{categoryId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/categories/{{categoryId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "categories", "{{categoryId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Admin Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics?from=2026-01-01T00:00:00.000Z&to=2026-01-31T00:00:00.000Z&topTutorsLimit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "analytics"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-01-01T00:00:00.000Z"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-01-31T00:00:00.000Z"
+                },
+                {
+                  "key": "topTutorsLimit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "talhashahidkhan49@gmail.com",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "talha@123",
+      "type": "string"
+    },
+    {
+      "key": "tutorId",
+      "value": "PLACEHOLDER_TUTOR_ID",
+      "type": "string"
+    },
+    {
+      "key": "categoryId",
+      "value": "PLACEHOLDER_CATEGORY_ID",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "PLACEHOLDER_BOOKING_ID",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "PLACEHOLDER_USER_ID",
+      "type": "string"
+    },
+    {
+      "key": "reviewId",
+      "value": "PLACEHOLDER_REVIEW_ID",
+      "type": "string"
+    },
+    {
+      "key": "verificationToken",
+      "value": "PLACEHOLDER",
+      "type": "string"
+    },
+    {
+      "key": "resetToken",
+      "value": "PLACEHOLDER",
+      "type": "string"
+    },
+    {
+      "key": "sessionToken",
+      "value": "PLACEHOLDER",
+      "type": "string"
+    }
+  ]
+}

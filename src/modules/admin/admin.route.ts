@@ -55,6 +55,14 @@ router.delete(
   adminController.deleteReview,
 );
 
+// Bookings management
+router.get(
+  "/bookings",
+  requireAuth,
+  requireAdmin,
+  adminController.listBookings,
+);
+
 // Tutor moderation
 router.patch(
   "/tutors/:id/featured",

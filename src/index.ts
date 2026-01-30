@@ -18,19 +18,13 @@ app.use(
 );
 
 app.use(express.json());
-app.all("/api/v1/auth/*splat", toNodeHandler(auth));
-
+app.all("/api/auth/*splat", toNodeHandler(auth));
 // API v1 routes
-app.use("/api/v1/student", studentRouter);
-app.use("/api/v1/tutor", tutorRouter);
-app.use("/api/v1/admin", adminRouter);
-
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-// Vercel mounts the serverless function at /api, so root requests arrive as /api
-app.get("/api", (req, res) => {
-  res.send("Hello World");
+app.use("/api/student", studentRouter);
+app.use("/api/tutor", tutorRouter);
+app.use("/api/admin", adminRouter);
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Skill Bridge API is running" });
 });
 // 404 handler
 app.use((_req, res) => {

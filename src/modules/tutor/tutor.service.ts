@@ -90,6 +90,15 @@ export async function upsertMyTutorProfile(
   userId: string,
   input: UpsertTutorProfileInput,
 ) {
+  // Validate category existence
+  const category = await prisma.category.findUnique({
+    where: { categoryId: input.categoryId },
+    select: { categoryId: true },
+  });
+  if (!category) {
+    throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+  }
+
   return prisma.tutor.upsert({
     where: { userId },
     create: {
@@ -140,6 +149,16 @@ export async function updateMyTutorProfile(
     throw httpErrors.notFound(
       "Tutor profile not found. Create your profile first.",
     );
+  }
+
+  if (typeof input.categoryId === "string") {
+    const category = await prisma.category.findUnique({
+      where: { categoryId: input.categoryId },
+      select: { categoryId: true },
+    });
+    if (!category) {
+      throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+    }
   }
 
   return prisma.tutor.update({

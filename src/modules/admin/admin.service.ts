@@ -229,6 +229,80 @@ export async function deleteReview(reviewId: string) {
   return prisma.review.delete({ where: { reviewId } });
 }
 
+// -------------------------
+// Bookings management
+// -------------------------
+
+export type AdminListBookingsInput = {
+  page?: number;
+  limit?: number;
+  status?: string;
+  studentId?: string;
+  tutorId?: string;
+  from?: Date;
+  to?: Date;
+  search?: string; // searches student/tutor name or email
+};
+
+export async function listBookings(input: AdminListBookingsInput = {}) {
+  const { page, limit, skip } = normalizePagination(input);
+
+  const where: Prisma.BookingWhereInput = {
+    ...(input.status ? { status: input.status as any } : {}),
+    ...(input.studentId ? { studentId: input.studentId } : {}),
+    ...(input.tutorId ? { tutorId: input.tutorId } : {}),
+    ...((input.from || input.to) && {
+      date: {
+        ...(input.from ? { gte: input.from } : {}),
+        ...(input.to ? { lte: input.to } : {}),
+      },
+    }),
+    ...(input.search?.trim()
+      ? {
+          OR: [
+            {
+              student: {
+                user: {
+                  OR: [
+                    { name: { contains: input.search, mode: "insensitive" } },
+                    { email: { contains: input.search, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+            {
+              tutor: {
+                user: {
+                  OR: [
+                    { name: { contains: input.search, mode: "insensitive" } },
+                    { email: { contains: input.search, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, bookings] = await prisma.$transaction([
+    prisma.booking.count({ where }),
+    prisma.booking.findMany({
+      where,
+      orderBy: { date: "desc" },
+      skip,
+      take: limit,
+      include: {
+        student: { include: { user: true } },
+        tutor: { include: { user: true, category: true } },
+        review: true,
+      },
+    }),
+  ]);
+
+  return { meta: toPageMeta(page, limit, total), data: bookings };
+}
+
 export async function setTutorFeatured(tutorId: string, isFeatured: boolean) {
   return prisma.tutor.update({
     where: { tutorId },

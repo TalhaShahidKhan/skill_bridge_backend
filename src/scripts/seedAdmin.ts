@@ -93,7 +93,7 @@ const seedAdmin = async (): Promise<void> => {
     // Update user role to ADMIN
     await prisma.user.update({
       where: { email },
-      data: { role: "ADMIN" },
+      data: { role: "ADMIN", emailVerified: true },
     });
 
     console.log("Admin seeded successfully!");
