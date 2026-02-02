@@ -157,11 +157,12 @@ var auth = betterAuth({
   }),
   baseURL: `${process.env.BETTER_AUTH_URL}/api/auth`,
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
+  advanced: {},
   cookie: {
     name: "skill_bridge_auth",
     httpOnly: true,
-    sameSite: "none",
-    secure: true
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production"
   },
   user: {
     additionalFields: {
@@ -2219,6 +2220,7 @@ var publicCategoriesRouter = catRouter;
 
 // src/index.ts
 var app = express();
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: process.env.APP_URL || "http://localhost:3000",

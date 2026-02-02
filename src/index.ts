@@ -12,6 +12,7 @@ import {
 import { isHttpError } from "./utils/httpError";
 
 const app = express();
+app.set("trust proxy", 1);
 
 // CORS configuration
 app.use(
