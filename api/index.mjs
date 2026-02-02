@@ -156,6 +156,10 @@ var auth = betterAuth({
     provider: "postgresql"
   }),
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
+  cookie: {
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production" ? true : false
+  },
   user: {
     additionalFields: {
       role: {
@@ -230,6 +234,9 @@ var auth = betterAuth({
         throw error;
       }
     }
+  },
+  advanced: {
+    useSecureCookies: true
   }
 });
 
