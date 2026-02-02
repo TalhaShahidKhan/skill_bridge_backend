@@ -89,14 +89,14 @@ var config = {
   "clientVersion": "7.3.0",
   "engineVersion": "9d6ad21cbbceab97458517b147a6a09ff43aa735",
   "activeProvider": "postgresql",
-  "inlineSchema": 'model User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n\n  role    String   @default("STUDENT")\n  status  String   @default("ACTIVE")\n  student Student?\n  tutor   Tutor?\n\n  @@unique([email])\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([token])\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nenum BookingStatus {\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n\nmodel Booking {\n  bookingId String        @id @default(uuid())\n  studentId String\n  student   Student       @relation(fields: [studentId], references: [studentId], onDelete: Cascade)\n  tutorId   String\n  tutor     Tutor         @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)\n  date      DateTime\n  time      DateTime\n  duration  Int\n  status    BookingStatus @default(CONFIRMED)\n  notes     String?\n  createdAt DateTime      @default(now())\n  updatedAt DateTime      @updatedAt\n  review    Review?\n\n  @@index([date])\n  @@index([status])\n  @@index([studentId])\n  @@index([tutorId])\n  @@map("bookings")\n}\n\nmodel Category {\n  categoryId String   @id @default(uuid())\n  name       String\n  subjects   String[]\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  tutors     Tutor[]\n\n  @@unique([name])\n  @@map("categories")\n}\n\nmodel Review {\n  reviewId  String   @id @default(uuid())\n  studentId String\n  student   Student  @relation(fields: [studentId], references: [studentId], onDelete: Cascade)\n  tutorId   String\n  tutor     Tutor    @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)\n  bookingId String   @unique\n  booking   Booking  @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)\n  rating    Int\n  comment   String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([tutorId])\n  @@index([rating])\n  @@map("reviews")\n}\n\n// This is your Prisma schema file,\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Student {\n  studentId  String    @id @default(uuid())\n  class      String\n  institute  String\n  address    String\n  phone      String\n  profilePic String?\n  bio        String?\n  group      Group     @default(NONE)\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  userId     String    @unique\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bookings   Booking[]\n  reviews    Review[]\n\n  @@map("students")\n}\n\nenum Group {\n  NONE\n  SCIENCE\n  HUMANITIES\n  BUSINESS_STUDIES\n}\n\nmodel Tutor {\n  tutorId       String    @id @default(uuid())\n  subject       String\n  experience    Int\n  address       String\n  phone         String\n  profilePic    String?\n  bio           String?\n  institute     String?\n  group         Group\n  isFeatured    Boolean   @default(false)\n  isAvailable   Boolean   @default(true)\n  availableFrom DateTime?\n  availableTo   DateTime?\n  pricePerDay   Float\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  userId        String    @unique\n  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  categoryId    String\n  category      Category  @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)\n  bookings      Booking[]\n  reviews       Review[]\n\n  @@map("tutors")\n}\n',
+  "inlineSchema": 'model User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n\n  role    String   @default("STUDENT")\n  status  String   @default("ACTIVE")\n  student Student?\n  tutor   Tutor?\n\n  @@unique([email])\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([token])\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nenum BookingStatus {\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n\nmodel Booking {\n  bookingId String        @id @default(uuid())\n  studentId String\n  student   Student       @relation(fields: [studentId], references: [studentId], onDelete: Cascade)\n  tutorId   String\n  tutor     Tutor         @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)\n  date      DateTime\n  time      DateTime\n  duration  Int\n  status    BookingStatus @default(CONFIRMED)\n  notes     String?\n  createdAt DateTime      @default(now())\n  updatedAt DateTime      @updatedAt\n  review    Review?\n\n  @@index([date])\n  @@index([status])\n  @@index([studentId])\n  @@index([tutorId])\n  @@map("bookings")\n}\n\nmodel Category {\n  categoryId String   @id @default(uuid())\n  name       String\n  subjects   String[]\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  tutors     Tutor[]\n\n  @@unique([name])\n  @@map("categories")\n}\n\nmodel Review {\n  reviewId  String   @id @default(uuid())\n  studentId String\n  student   Student  @relation(fields: [studentId], references: [studentId], onDelete: Cascade)\n  tutorId   String\n  tutor     Tutor    @relation(fields: [tutorId], references: [tutorId], onDelete: Cascade)\n  bookingId String   @unique\n  booking   Booking  @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)\n  rating    Int\n  comment   String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([tutorId])\n  @@index([rating])\n  @@map("reviews")\n}\n\n// This is your Prisma schema file,\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Student {\n  studentId  String    @id @default(uuid())\n  class      String\n  institute  String\n  address    String\n  phone      String\n  profilePic String?\n  bio        String?\n  group      Group     @default(NONE)\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  userId     String    @unique\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  bookings   Booking[]\n  reviews    Review[]\n\n  @@map("students")\n}\n\nenum Group {\n  NONE\n  SCIENCE\n  HUMANITIES\n  BUSINESS_STUDIES\n}\n\nmodel Tutor {\n  tutorId       String    @id @default(uuid())\n  subjects      String[]\n  experience    Int\n  address       String\n  phone         String\n  profilePic    String?\n  bio           String?\n  institute     String?\n  group         Group\n  isFeatured    Boolean   @default(false)\n  isAvailable   Boolean   @default(true)\n  availableFrom DateTime?\n  availableTo   DateTime?\n  pricePerDay   Float\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  userId        String    @unique\n  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  categoryId    String\n  category      Category  @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)\n  bookings      Booking[]\n  reviews       Review[]\n\n  @@map("tutors")\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
     "types": {}
   }
 };
-config.runtimeDataModel = JSON.parse('{"models":{"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"image","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"sessions","kind":"object","type":"Session","relationName":"SessionToUser"},{"name":"accounts","kind":"object","type":"Account","relationName":"AccountToUser"},{"name":"role","kind":"scalar","type":"String"},{"name":"status","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"StudentToUser"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"TutorToUser"}],"dbName":"user"},"Session":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"token","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"ipAddress","kind":"scalar","type":"String"},{"name":"userAgent","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"SessionToUser"}],"dbName":"session"},"Account":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"accountId","kind":"scalar","type":"String"},{"name":"providerId","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"AccountToUser"},{"name":"accessToken","kind":"scalar","type":"String"},{"name":"refreshToken","kind":"scalar","type":"String"},{"name":"idToken","kind":"scalar","type":"String"},{"name":"accessTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"refreshTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"scope","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"account"},"Verification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"identifier","kind":"scalar","type":"String"},{"name":"value","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"verification"},"Booking":{"fields":[{"name":"bookingId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"BookingToStudent"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"BookingToTutor"},{"name":"date","kind":"scalar","type":"DateTime"},{"name":"time","kind":"scalar","type":"DateTime"},{"name":"duration","kind":"scalar","type":"Int"},{"name":"status","kind":"enum","type":"BookingStatus"},{"name":"notes","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"review","kind":"object","type":"Review","relationName":"BookingToReview"}],"dbName":"bookings"},"Category":{"fields":[{"name":"categoryId","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"subjects","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"tutors","kind":"object","type":"Tutor","relationName":"CategoryToTutor"}],"dbName":"categories"},"Review":{"fields":[{"name":"reviewId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"ReviewToStudent"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"ReviewToTutor"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToReview"},{"name":"rating","kind":"scalar","type":"Int"},{"name":"comment","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"reviews"},"Student":{"fields":[{"name":"studentId","kind":"scalar","type":"String"},{"name":"class","kind":"scalar","type":"String"},{"name":"institute","kind":"scalar","type":"String"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"profilePic","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"group","kind":"enum","type":"Group"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"StudentToUser"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToStudent"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToStudent"}],"dbName":"students"},"Tutor":{"fields":[{"name":"tutorId","kind":"scalar","type":"String"},{"name":"subject","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"profilePic","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"institute","kind":"scalar","type":"String"},{"name":"group","kind":"enum","type":"Group"},{"name":"isFeatured","kind":"scalar","type":"Boolean"},{"name":"isAvailable","kind":"scalar","type":"Boolean"},{"name":"availableFrom","kind":"scalar","type":"DateTime"},{"name":"availableTo","kind":"scalar","type":"DateTime"},{"name":"pricePerDay","kind":"scalar","type":"Float"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"TutorToUser"},{"name":"categoryId","kind":"scalar","type":"String"},{"name":"category","kind":"object","type":"Category","relationName":"CategoryToTutor"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToTutor"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToTutor"}],"dbName":"tutors"}},"enums":{},"types":{}}');
+config.runtimeDataModel = JSON.parse('{"models":{"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"image","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"sessions","kind":"object","type":"Session","relationName":"SessionToUser"},{"name":"accounts","kind":"object","type":"Account","relationName":"AccountToUser"},{"name":"role","kind":"scalar","type":"String"},{"name":"status","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"StudentToUser"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"TutorToUser"}],"dbName":"user"},"Session":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"token","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"ipAddress","kind":"scalar","type":"String"},{"name":"userAgent","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"SessionToUser"}],"dbName":"session"},"Account":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"accountId","kind":"scalar","type":"String"},{"name":"providerId","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"AccountToUser"},{"name":"accessToken","kind":"scalar","type":"String"},{"name":"refreshToken","kind":"scalar","type":"String"},{"name":"idToken","kind":"scalar","type":"String"},{"name":"accessTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"refreshTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"scope","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"account"},"Verification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"identifier","kind":"scalar","type":"String"},{"name":"value","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"verification"},"Booking":{"fields":[{"name":"bookingId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"BookingToStudent"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"BookingToTutor"},{"name":"date","kind":"scalar","type":"DateTime"},{"name":"time","kind":"scalar","type":"DateTime"},{"name":"duration","kind":"scalar","type":"Int"},{"name":"status","kind":"enum","type":"BookingStatus"},{"name":"notes","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"review","kind":"object","type":"Review","relationName":"BookingToReview"}],"dbName":"bookings"},"Category":{"fields":[{"name":"categoryId","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"subjects","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"tutors","kind":"object","type":"Tutor","relationName":"CategoryToTutor"}],"dbName":"categories"},"Review":{"fields":[{"name":"reviewId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"student","kind":"object","type":"Student","relationName":"ReviewToStudent"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"tutor","kind":"object","type":"Tutor","relationName":"ReviewToTutor"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToReview"},{"name":"rating","kind":"scalar","type":"Int"},{"name":"comment","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"reviews"},"Student":{"fields":[{"name":"studentId","kind":"scalar","type":"String"},{"name":"class","kind":"scalar","type":"String"},{"name":"institute","kind":"scalar","type":"String"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"profilePic","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"group","kind":"enum","type":"Group"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"StudentToUser"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToStudent"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToStudent"}],"dbName":"students"},"Tutor":{"fields":[{"name":"tutorId","kind":"scalar","type":"String"},{"name":"subjects","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"profilePic","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"institute","kind":"scalar","type":"String"},{"name":"group","kind":"enum","type":"Group"},{"name":"isFeatured","kind":"scalar","type":"Boolean"},{"name":"isAvailable","kind":"scalar","type":"Boolean"},{"name":"availableFrom","kind":"scalar","type":"DateTime"},{"name":"availableTo","kind":"scalar","type":"DateTime"},{"name":"pricePerDay","kind":"scalar","type":"Float"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"TutorToUser"},{"name":"categoryId","kind":"scalar","type":"String"},{"name":"category","kind":"object","type":"Category","relationName":"CategoryToTutor"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToTutor"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToTutor"}],"dbName":"tutors"}},"enums":{},"types":{}}');
 async function decodeBase64AsWasm(wasmBase64) {
   const { Buffer } = await import("buffer");
   const wasmArray = Buffer.from(wasmBase64, "base64");
@@ -172,13 +172,14 @@ var auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({ user, url, token }) => {
       try {
+        const resetUrl = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
         const mailOptions = {
           from: process.env.EMAIL_HOST_USER,
           to: user.email,
           subject: "Password Reset Request",
-          text: `Click here to reset your password: ${url}`
+          text: `Click here to reset your password: ${resetUrl}`
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -208,12 +209,12 @@ var auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
+        const verificationUrl = `${process.env.APP_URL}/auth/verify-email?token=${token}`;
         const mailOptions = {
           from: process.env.EMAIL_HOST_USER,
           to: user.email,
           subject: "Verify your email address",
-          text: `Please click on the following link to verify your email address: ${url}`
+          text: `Please click on the following link to verify your email address: ${verificationUrl}`
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -367,7 +368,7 @@ var httpErrors = {
 };
 
 // src/modules/admin/admin.service.ts
-function toPageMeta(page, limit, total) {
+function toPagination(page, limit, total) {
   return {
     page,
     limit,
@@ -428,7 +429,10 @@ async function listUsers(input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta(page, limit, total), data: users };
+  return {
+    pagination: toPagination(page, limit, total),
+    users
+  };
 }
 async function getUserById(userId) {
   return prisma.user.findUnique({
@@ -500,7 +504,7 @@ async function listReviews(input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta(page, limit, total), data: reviews };
+  return { pagination: toPagination(page, limit, total), data: reviews };
 }
 async function deleteReview(reviewId) {
   return prisma.review.delete({ where: { reviewId } });
@@ -556,7 +560,7 @@ async function listBookings(input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta(page, limit, total), data: bookings };
+  return { pagination: toPagination(page, limit, total), data: bookings };
 }
 async function setTutorFeatured(tutorId, isFeatured) {
   return prisma.tutor.update({
@@ -705,7 +709,7 @@ async function getAnalytics(input = {}) {
         avgRating: aggAny._avg?.rating ?? 0,
         reviewsCount: aggAny._count?._all ?? 0,
         tutor: tutor ? {
-          subject: tutor.subject,
+          subjects: tutor.subjects,
           group: tutor.group,
           pricePerDay: tutor.pricePerDay,
           isFeatured: tutor.isFeatured ?? false,
@@ -780,7 +784,7 @@ var listUsers2 = asyncHandler(async (req, res) => {
     ...createdFrom !== void 0 ? { createdFrom } : {},
     ...createdTo !== void 0 ? { createdTo } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var getUser = asyncHandler(async (req, res) => {
   const userId = getParam(req, "id") ?? getParam(req, "userId");
@@ -854,7 +858,7 @@ var listReviews2 = asyncHandler(async (req, res) => {
     ...createdFrom !== void 0 ? { createdFrom } : {},
     ...createdTo !== void 0 ? { createdTo } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var deleteReview2 = asyncHandler(async (req, res) => {
   const reviewId = getParam(req, "id") ?? getParam(req, "reviewId");
@@ -881,7 +885,7 @@ var listBookings2 = asyncHandler(async (req, res) => {
     ...to !== void 0 ? { to } : {},
     ...search !== void 0 ? { search } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var setTutorFeatured2 = asyncHandler(async (req, res) => {
   const tutorId = getParam(req, "id") ?? getParam(req, "tutorId");
@@ -1004,7 +1008,7 @@ var adminRouter = router;
 import { Router as Router2 } from "express";
 
 // src/modules/student/student.service.ts
-function toPageMeta2(page, limit, total) {
+function toPagination2(page, limit, total) {
   return {
     page,
     limit,
@@ -1096,7 +1100,14 @@ async function browseTutors(input = {}) {
   const { page, limit, skip } = normalizePagination2(input);
   const q = input.search?.trim();
   const where = {
-    ...input.categoryId ? { categoryId: input.categoryId } : {},
+    ...input.categoryId ? {
+      category: {
+        OR: [
+          { categoryId: { equals: input.categoryId } },
+          { name: { equals: input.categoryId, mode: "insensitive" } }
+        ]
+      }
+    } : {},
     ...input.group ? { group: input.group } : {},
     ...typeof input.onlyAvailable === "boolean" ? { isAvailable: input.onlyAvailable } : {},
     ...typeof input.onlyFeatured === "boolean" ? { isFeatured: input.onlyFeatured } : {},
@@ -1108,7 +1119,7 @@ async function browseTutors(input = {}) {
     },
     ...q ? {
       OR: [
-        { subject: { contains: q, mode: "insensitive" } },
+        { subjects: { hasSome: [q] } },
         { user: { name: { contains: q, mode: "insensitive" } } }
       ]
     } : {}
@@ -1133,10 +1144,9 @@ async function browseTutors(input = {}) {
     const reviews = t.reviews ?? [];
     const ratings = reviews.map((r) => r.rating);
     const avgRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
-    const { reviews: _ignored, ...rest } = t;
-    return { ...rest, avgRating, reviewsCount: ratings.length };
+    return { ...t, avgRating, reviewsCount: ratings.length };
   });
-  return { meta: toPageMeta2(page, limit, total), data };
+  return { pagination: toPagination2(page, limit, total), data };
 }
 async function getTutorDetails(tutorId) {
   const tutor = await prisma.tutor.findUnique({
@@ -1225,7 +1235,7 @@ async function listMyBookings(userId, input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta2(page, limit, total), data: bookings };
+  return { pagination: toPagination2(page, limit, total), data: bookings };
 }
 async function getMyBookingById(userId, bookingId) {
   const student = await prisma.student.findUnique({
@@ -1325,7 +1335,37 @@ async function listMyReviews(userId, input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta2(page, limit, total), data: reviews };
+  return { pagination: toPagination2(page, limit, total), data: reviews };
+}
+async function getMyDashboardStats(userId) {
+  const student = await prisma.student.findUnique({
+    where: { userId },
+    select: { studentId: true }
+  });
+  if (!student)
+    throw httpErrors.notFound(
+      "Student profile not found. Create your profile first."
+    );
+  const [totalBookings, completedBookings, pendingBookings, reviewCount] = await prisma.$transaction([
+    prisma.booking.count({ where: { studentId: student.studentId } }),
+    prisma.booking.count({
+      where: { studentId: student.studentId, status: "COMPLETED" }
+    }),
+    prisma.booking.count({
+      where: { studentId: student.studentId, status: "CONFIRMED" }
+    }),
+    prisma.review.count({ where: { studentId: student.studentId } })
+  ]);
+  return {
+    bookings: {
+      total: totalBookings,
+      completed: completedBookings,
+      pending: pendingBookings
+    },
+    reviews: {
+      count: reviewCount
+    }
+  };
 }
 
 // src/modules/student/student.controller.ts
@@ -1406,7 +1446,7 @@ var browseTutors2 = asyncHandler2(async (req, res) => {
     ...onlyAvailable !== void 0 ? { onlyAvailable } : {},
     ...onlyFeatured !== void 0 ? { onlyFeatured } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var getTutorDetails2 = asyncHandler2(async (req, res) => {
   const tutorId = getParam2(req, "id") ?? getParam2(req, "tutorId");
@@ -1442,7 +1482,7 @@ var listMyBookings2 = asyncHandler2(async (req, res) => {
     ...from !== void 0 ? { from } : {},
     ...to !== void 0 ? { to } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var getMyBooking = asyncHandler2(async (req, res) => {
   const userId = requireUserId(req);
@@ -1471,7 +1511,12 @@ var listMyReviews2 = asyncHandler2(async (req, res) => {
     ...page !== void 0 ? { page } : {},
     ...limit !== void 0 ? { limit } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
+});
+var getDashboardStats = asyncHandler2(async (req, res) => {
+  const userId = requireUserId(req);
+  const stats = await getMyDashboardStats(userId);
+  res.json({ success: true, data: stats });
 });
 
 // src/modules/student/student.route.ts
@@ -1479,6 +1524,12 @@ var router2 = Router2();
 router2.get("/tutors", browseTutors2);
 router2.get("/tutors/:id", getTutorDetails2);
 router2.get("/categories", listCategories2);
+router2.get(
+  "/dashboard",
+  requireAuth,
+  requireRole(UserRole.STUDENT),
+  getDashboardStats
+);
 router2.get(
   "/me",
   requireAuth,
@@ -1539,7 +1590,7 @@ var studentRouter = router2;
 import { Router as Router3 } from "express";
 
 // src/modules/tutor/tutor.service.ts
-function toPageMeta3(page, limit, total) {
+function toPagination3(page, limit, total) {
   return {
     page,
     limit,
@@ -1581,16 +1632,27 @@ async function getMyTutorProfile(userId) {
 async function upsertMyTutorProfile(userId, input) {
   const category = await prisma.category.findUnique({
     where: { categoryId: input.categoryId },
-    select: { categoryId: true }
+    select: { categoryId: true, subjects: true }
   });
   if (!category) {
     throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+  }
+  if (category.subjects.length > 0) {
+    const invalidSubjects = input.subjects.filter(
+      (s) => !category.subjects.includes(s)
+    );
+    if (invalidSubjects.length > 0) {
+      throw httpErrors.badRequest(
+        `Subjects "${invalidSubjects.join(", ")}" are not valid for category "${input.categoryId}".`,
+        "INVALID_SUBJECT"
+      );
+    }
   }
   return prisma.tutor.upsert({
     where: { userId },
     create: {
       userId,
-      subject: input.subject,
+      subjects: input.subjects,
       experience: input.experience,
       address: input.address,
       phone: input.phone,
@@ -1603,7 +1665,7 @@ async function upsertMyTutorProfile(userId, input) {
       isAvailable: true
     },
     update: {
-      subject: input.subject,
+      subjects: input.subjects,
       experience: input.experience,
       address: input.address,
       phone: input.phone,
@@ -1627,19 +1689,37 @@ async function updateMyTutorProfile(userId, input) {
       "Tutor profile not found. Create your profile first."
     );
   }
-  if (typeof input.categoryId === "string") {
+  if (typeof input.categoryId === "string" || input.subjects && Array.isArray(input.subjects)) {
+    const tutor = await prisma.tutor.findUnique({
+      where: { userId },
+      select: { categoryId: true, subjects: true }
+    });
+    if (!tutor) throw httpErrors.notFound("Tutor profile not found.");
+    const catId = input.categoryId ?? tutor.categoryId;
+    const subs = input.subjects ?? tutor.subjects;
     const category = await prisma.category.findUnique({
-      where: { categoryId: input.categoryId },
-      select: { categoryId: true }
+      where: { categoryId: catId },
+      select: { subjects: true }
     });
     if (!category) {
       throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+    }
+    if (category.subjects.length > 0) {
+      const invalidSubjects = subs.filter(
+        (s) => !category.subjects.includes(s)
+      );
+      if (invalidSubjects.length > 0) {
+        throw httpErrors.badRequest(
+          `Subjects "${invalidSubjects.join(", ")}" are not valid for category "${catId}".`,
+          "INVALID_SUBJECT"
+        );
+      }
     }
   }
   return prisma.tutor.update({
     where: { userId },
     data: {
-      ...typeof input.subject === "string" ? { subject: input.subject } : {},
+      ...input.subjects ? { subjects: input.subjects } : {},
       ...typeof input.experience === "number" ? { experience: input.experience } : {},
       ...typeof input.address === "string" ? { address: input.address } : {},
       ...typeof input.phone === "string" ? { phone: input.phone } : {},
@@ -1716,7 +1796,7 @@ async function listMySessions(userId, input = {}) {
       }
     })
   ]);
-  return { meta: toPageMeta3(page, limit, total), data: sessions };
+  return { pagination: toPagination3(page, limit, total), data: sessions };
 }
 async function getMySessionById(userId, bookingId) {
   const tutor = await prisma.tutor.findUnique({
@@ -1789,12 +1869,12 @@ async function listMyReviews3(userId, input = {}) {
       include: { student: { include: { user: true } }, booking: true }
     })
   ]);
-  return { meta: toPageMeta3(page, limit, total), data: reviews };
+  return { pagination: toPagination3(page, limit, total), data: reviews };
 }
-async function getMyDashboardStats(userId) {
+async function getMyDashboardStats2(userId) {
   const tutor = await prisma.tutor.findUnique({
     where: { userId },
-    select: { tutorId: true }
+    select: { tutorId: true, pricePerDay: true }
   });
   if (!tutor)
     throw httpErrors.notFound(
@@ -1833,8 +1913,77 @@ async function getMyDashboardStats(userId) {
     reviews: {
       averageRating: ratingAgg._avg.rating ?? 0,
       count: ratingAgg._count._all
+    },
+    earnings: {
+      amount: completedSessions * tutor.pricePerDay,
+      currency: "BDT"
     }
   };
+}
+async function listTutors(input = {}) {
+  const { page, limit, skip } = normalizePagination3(input);
+  const search = input.search?.trim();
+  const category = input.category?.trim();
+  const where = {
+    isAvailable: true,
+    // Only show available tutors
+    ...search ? {
+      OR: [
+        { subjects: { hasSome: [search] } },
+        { bio: { contains: search, mode: "insensitive" } },
+        {
+          user: {
+            name: { contains: search, mode: "insensitive" }
+          }
+        }
+      ]
+    } : {},
+    ...category && category !== "All" ? {
+      category: {
+        OR: [
+          { name: { equals: category, mode: "insensitive" } },
+          { categoryId: { equals: category } }
+        ]
+      }
+    } : {}
+  };
+  const [total, tutors] = await prisma.$transaction([
+    prisma.tutor.count({ where }),
+    prisma.tutor.findMany({
+      where,
+      skip,
+      take: limit,
+      include: {
+        user: { select: { name: true, image: true } },
+        category: { select: { name: true } },
+        reviews: { select: { rating: true } },
+        _count: { select: { reviews: true } }
+      },
+      orderBy: { isFeatured: "desc" }
+      // featured first, then maybe random or created?
+    })
+  ]);
+  return { pagination: toPagination3(page, limit, total), data: tutors };
+}
+async function getTutorById(tutorId) {
+  const tutor = await prisma.tutor.findUnique({
+    where: { tutorId },
+    include: {
+      user: { select: { name: true, image: true, email: true } },
+      // Added email for contact if needed
+      category: { select: { name: true } },
+      reviews: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          student: {
+            include: { user: { select: { name: true, image: true } } }
+          }
+        }
+      }
+    }
+  });
+  if (!tutor) return null;
+  return tutor;
 }
 async function listCategories3() {
   return prisma.category.findMany({ orderBy: { name: "asc" } });
@@ -1899,12 +2048,14 @@ var updateMyProfile2 = asyncHandler3(async (req, res) => {
 });
 var setAvailability = asyncHandler3(async (req, res) => {
   const userId = requireUserId2(req);
-  const payload = {
-    ...req.body,
-    availableFrom: toDate3(req.body?.availableFrom) ?? req.body?.availableFrom,
-    availableTo: toDate3(req.body?.availableTo) ?? req.body?.availableTo
-  };
-  const tutor = await setMyAvailability(userId, payload);
+  const input = { ...req.body };
+  if ("availableFrom" in input) {
+    input.availableFrom = toDate3(input.availableFrom);
+  }
+  if ("availableTo" in input) {
+    input.availableTo = toDate3(input.availableTo);
+  }
+  const tutor = await setMyAvailability(userId, input);
   res.json({ success: true, data: tutor });
 });
 var listMySessions2 = asyncHandler3(async (req, res) => {
@@ -1923,7 +2074,7 @@ var listMySessions2 = asyncHandler3(async (req, res) => {
     ...to !== void 0 ? { to } : {},
     ...studentSearch !== void 0 ? { studentSearch } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 var getMySession = asyncHandler3(async (req, res) => {
   const userId = requireUserId2(req);
@@ -1951,16 +2102,36 @@ var listMyReviews4 = asyncHandler3(async (req, res) => {
     ...minRating !== void 0 ? { minRating } : {},
     ...maxRating !== void 0 ? { maxRating } : {}
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
-var getDashboardStats = asyncHandler3(async (req, res) => {
+var getDashboardStats2 = asyncHandler3(async (req, res) => {
   const userId = requireUserId2(req);
-  const stats = await getMyDashboardStats(userId);
+  const stats = await getMyDashboardStats2(userId);
   res.json({ success: true, data: stats });
 });
 var listCategories4 = asyncHandler3(async (_req, res) => {
   const categories = await listCategories3();
   res.json({ success: true, data: categories });
+});
+var listPublicTutors = asyncHandler3(async (req, res) => {
+  const page = toNumber3(req.query.page);
+  const limit = toNumber3(req.query.limit);
+  const search = asString3(req.query.search);
+  const category = asString3(req.query.category);
+  const result = await listTutors({
+    ...page !== void 0 ? { page } : {},
+    ...limit !== void 0 ? { limit } : {},
+    ...search !== void 0 ? { search } : {},
+    ...category !== void 0 ? { category } : {}
+  });
+  res.json({ success: true, data: result });
+});
+var getPublicTutor = asyncHandler3(async (req, res) => {
+  const tutorId = getParam3(req, "id");
+  if (!tutorId) throw httpErrors.badRequest("Tutor ID is required.");
+  const tutor = await getTutorById(tutorId);
+  if (!tutor) throw httpErrors.notFound("Tutor not found.");
+  res.json({ success: true, data: tutor });
 });
 
 // src/modules/tutor/tutor.route.ts
@@ -2017,7 +2188,7 @@ router3.get(
   "/dashboard",
   requireAuth,
   requireRole(UserRole.TUTOR),
-  getDashboardStats
+  getDashboardStats2
 );
 router3.get(
   "/categories",
@@ -2026,6 +2197,13 @@ router3.get(
   listCategories4
 );
 var tutorRouter = router3;
+var publicRouter = Router3();
+publicRouter.get("/", listPublicTutors);
+publicRouter.get("/:id", getPublicTutor);
+var publicTutorRouter = publicRouter;
+var catRouter = Router3();
+catRouter.get("/", listCategories4);
+var publicCategoriesRouter = catRouter;
 
 // src/index.ts
 var app = express();
@@ -2036,15 +2214,14 @@ app.use(
   })
 );
 app.use(express.json());
-app.all("/api/v1/auth/*splat", toNodeHandler(auth));
-app.use("/api/v1/student", studentRouter);
-app.use("/api/v1/tutor", tutorRouter);
-app.use("/api/v1/admin", adminRouter);
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-app.get("/api", (req, res) => {
-  res.send("Hello World");
+app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use("/api/student", studentRouter);
+app.use("/api/tutor", tutorRouter);
+app.use("/api/tutors", publicTutorRouter);
+app.use("/api/categories", publicCategoriesRouter);
+app.use("/api/admin", adminRouter);
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Skill Bridge API is running" });
 });
 app.use((_req, res) => {
   res.status(404).json({
