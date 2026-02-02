@@ -12,7 +12,14 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  baseURL: `${process.env.BETTER_AUTH_URL}/api/auth`,
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
+  cookie: {
+    name: "skill_bridge_auth",
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  },
   user: {
     additionalFields: {
       role: {

@@ -155,7 +155,14 @@ var auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql"
   }),
+  baseURL: `${process.env.BETTER_AUTH_URL}/api/auth`,
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
+  cookie: {
+    name: "skill_bridge_auth",
+    httpOnly: true,
+    sameSite: "none",
+    secure: true
+  },
   user: {
     additionalFields: {
       role: {
@@ -2218,8 +2225,8 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
 app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use(express.json());
 app.use("/api/student", studentRouter);
 app.use("/api/tutor", tutorRouter);
 app.use("/api/tutors", publicTutorRouter);
