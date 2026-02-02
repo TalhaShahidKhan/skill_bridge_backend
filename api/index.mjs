@@ -156,10 +156,6 @@ var auth = betterAuth({
     provider: "postgresql"
   }),
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
-  cookie: {
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production" ? true : false
-  },
   user: {
     additionalFields: {
       role: {
@@ -234,9 +230,6 @@ var auth = betterAuth({
         throw error;
       }
     }
-  },
-  advanced: {
-    useSecureCookies: true
   }
 });
 
@@ -2225,8 +2218,8 @@ app.use(
     credentials: true
   })
 );
-app.all("/api/auth/*", toNodeHandler(auth));
 app.use(express.json());
+app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/student", studentRouter);
 app.use("/api/tutor", tutorRouter);
 app.use("/api/tutors", publicTutorRouter);
