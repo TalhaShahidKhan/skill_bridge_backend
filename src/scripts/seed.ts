@@ -133,7 +133,6 @@ async function main() {
         role: UserRole.TUTOR,
         status: UserStatus.ACTIVE,
         emailVerified: true,
-        image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`,
       },
     });
 
