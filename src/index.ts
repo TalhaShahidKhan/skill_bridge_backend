@@ -21,9 +21,9 @@ app.use(
   }),
 );
 
-app.use(express.json());
-app.all("/api/auth/*splat", toNodeHandler(auth));
 // API v1 routes
+app.all("/api/auth/*", toNodeHandler(auth));
+app.use(express.json());
 app.use("/api/student", studentRouter);
 app.use("/api/tutor", tutorRouter);
 app.use("/api/tutors", publicTutorRouter);
