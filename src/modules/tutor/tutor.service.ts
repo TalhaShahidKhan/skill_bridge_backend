@@ -13,7 +13,7 @@ type PageMeta = {
   totalPages: number;
 };
 
-function toPageMeta(page: number, limit: number, total: number): PageMeta {
+function toPagination(page: number, limit: number, total: number) {
   return {
     page,
     limit,
@@ -74,7 +74,7 @@ export async function getMyTutorProfile(userId: string) {
 }
 
 export type UpsertTutorProfileInput = {
-  subject: string;
+  subjects: string[];
   experience: number;
   address: string;
   phone: string;
@@ -93,17 +93,30 @@ export async function upsertMyTutorProfile(
   // Validate category existence
   const category = await prisma.category.findUnique({
     where: { categoryId: input.categoryId },
-    select: { categoryId: true },
+    select: { categoryId: true, subjects: true },
   });
   if (!category) {
     throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+  }
+
+  // Validate subjects if category has subjects restricted
+  if (category.subjects.length > 0) {
+    const invalidSubjects = input.subjects.filter(
+      (s) => !category.subjects.includes(s),
+    );
+    if (invalidSubjects.length > 0) {
+      throw httpErrors.badRequest(
+        `Subjects "${invalidSubjects.join(", ")}" are not valid for category "${input.categoryId}".`,
+        "INVALID_SUBJECT",
+      );
+    }
   }
 
   return prisma.tutor.upsert({
     where: { userId },
     create: {
       userId,
-      subject: input.subject,
+      subjects: input.subjects,
       experience: input.experience,
       address: input.address,
       phone: input.phone,
@@ -116,7 +129,7 @@ export async function upsertMyTutorProfile(
       isAvailable: true,
     },
     update: {
-      subject: input.subject,
+      subjects: input.subjects,
       experience: input.experience,
       address: input.address,
       phone: input.phone,
@@ -151,20 +164,45 @@ export async function updateMyTutorProfile(
     );
   }
 
-  if (typeof input.categoryId === "string") {
-    const category = await prisma.category.findUnique({
-      where: { categoryId: input.categoryId },
-      select: { categoryId: true },
+  if (
+    typeof input.categoryId === "string" ||
+    (input.subjects && Array.isArray(input.subjects))
+  ) {
+    const tutor = await prisma.tutor.findUnique({
+      where: { userId },
+      select: { categoryId: true, subjects: true },
     });
+    if (!tutor) throw httpErrors.notFound("Tutor profile not found.");
+
+    const catId = input.categoryId ?? tutor.categoryId;
+    const subs = input.subjects ?? tutor.subjects;
+
+    const category = await prisma.category.findUnique({
+      where: { categoryId: catId },
+      select: { subjects: true },
+    });
+
     if (!category) {
       throw httpErrors.notFound("Category not found.", "INVALID_CATEGORY");
+    }
+
+    if (category.subjects.length > 0) {
+      const invalidSubjects = subs.filter(
+        (s) => !category.subjects.includes(s),
+      );
+      if (invalidSubjects.length > 0) {
+        throw httpErrors.badRequest(
+          `Subjects "${invalidSubjects.join(", ")}" are not valid for category "${catId}".`,
+          "INVALID_SUBJECT",
+        );
+      }
     }
   }
 
   return prisma.tutor.update({
     where: { userId },
     data: {
-      ...(typeof input.subject === "string" ? { subject: input.subject } : {}),
+      ...(input.subjects ? { subjects: input.subjects } : {}),
       ...(typeof input.experience === "number"
         ? { experience: input.experience }
         : {}),
@@ -295,7 +333,7 @@ export async function listMySessions(
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: sessions };
+  return { pagination: toPagination(page, limit, total), data: sessions };
 }
 
 export async function getMySessionById(userId: string, bookingId: string) {
@@ -395,13 +433,13 @@ export async function listMyReviews(
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: reviews };
+  return { pagination: toPagination(page, limit, total), data: reviews };
 }
 
 export async function getMyDashboardStats(userId: string) {
   const tutor = await prisma.tutor.findUnique({
     where: { userId },
-    select: { tutorId: true },
+    select: { tutorId: true, pricePerDay: true },
   });
   if (!tutor)
     throw httpErrors.notFound(
@@ -443,7 +481,90 @@ export async function getMyDashboardStats(userId: string) {
       averageRating: ratingAgg._avg.rating ?? 0,
       count: ratingAgg._count._all,
     },
+    earnings: {
+      amount: completedSessions * tutor.pricePerDay,
+      currency: "BDT",
+    },
   };
+}
+
+export async function listTutors(
+  input: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string; // category name or id
+  } = {},
+) {
+  const { page, limit, skip } = normalizePagination(input);
+  const search = input.search?.trim();
+  const category = input.category?.trim();
+
+  const where: Prisma.TutorWhereInput = {
+    isAvailable: true, // Only show available tutors
+    ...(search
+      ? {
+          OR: [
+            { subjects: { hasSome: [search] } },
+            { bio: { contains: search, mode: "insensitive" } },
+            {
+              user: {
+                name: { contains: search, mode: "insensitive" },
+              },
+            },
+          ],
+        }
+      : {}),
+    ...(category && category !== "All"
+      ? {
+          category: {
+            OR: [
+              { name: { equals: category, mode: "insensitive" } },
+              { categoryId: { equals: category } },
+            ],
+          },
+        }
+      : {}),
+  };
+
+  const [total, tutors] = await prisma.$transaction([
+    prisma.tutor.count({ where }),
+    prisma.tutor.findMany({
+      where,
+      skip,
+      take: limit,
+      include: {
+        user: { select: { name: true, image: true } },
+        category: { select: { name: true } },
+        reviews: { select: { rating: true } },
+        _count: { select: { reviews: true } },
+      },
+      orderBy: { isFeatured: "desc" }, // featured first, then maybe random or created?
+    }),
+  ]);
+
+  return { pagination: toPagination(page, limit, total), data: tutors };
+}
+
+export async function getTutorById(tutorId: string) {
+  const tutor = await prisma.tutor.findUnique({
+    where: { tutorId },
+    include: {
+      user: { select: { name: true, image: true, email: true } }, // Added email for contact if needed
+      category: { select: { name: true } },
+      reviews: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          student: {
+            include: { user: { select: { name: true, image: true } } },
+          },
+        },
+      },
+    },
+  });
+
+  if (!tutor) return null;
+  return tutor;
 }
 
 export async function listCategories() {

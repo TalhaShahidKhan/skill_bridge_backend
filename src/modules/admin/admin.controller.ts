@@ -76,7 +76,7 @@ export const listUsers = asyncHandler(async (req, res) => {
     ...(createdFrom !== undefined ? { createdFrom } : {}),
     ...(createdTo !== undefined ? { createdTo } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const getUser = asyncHandler(async (req, res) => {
@@ -168,7 +168,7 @@ export const listReviews = asyncHandler(async (req, res) => {
     ...(createdFrom !== undefined ? { createdFrom } : {}),
     ...(createdTo !== undefined ? { createdTo } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const deleteReview = asyncHandler(async (req, res) => {
@@ -198,7 +198,7 @@ export const listBookings = asyncHandler(async (req, res) => {
     ...(to !== undefined ? { to } : {}),
     ...(search !== undefined ? { search } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const setTutorFeatured = asyncHandler(async (req, res) => {

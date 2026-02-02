@@ -109,7 +109,7 @@ export const browseTutors = asyncHandler(async (req, res) => {
     ...(onlyAvailable !== undefined ? { onlyAvailable } : {}),
     ...(onlyFeatured !== undefined ? { onlyFeatured } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const getTutorDetails = asyncHandler(async (req, res) => {
@@ -154,7 +154,7 @@ export const listMyBookings = asyncHandler(async (req, res) => {
     ...(from !== undefined ? { from } : {}),
     ...(to !== undefined ? { to } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const getMyBooking = asyncHandler(async (req, res) => {
@@ -191,5 +191,11 @@ export const listMyReviews = asyncHandler(async (req, res) => {
     ...(page !== undefined ? { page } : {}),
     ...(limit !== undefined ? { limit } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
+});
+
+export const getDashboardStats = asyncHandler(async (req, res) => {
+  const userId = requireUserId(req);
+  const stats = await studentService.getMyDashboardStats(userId);
+  res.json({ success: true, data: stats });
 });

@@ -4,7 +4,11 @@ import express from "express";
 import { auth } from "./lib/auth";
 import { adminRouter } from "./modules/admin/admin.route";
 import { studentRouter } from "./modules/student/student.route";
-import { tutorRouter } from "./modules/tutor/tutor.route";
+import {
+  publicCategoriesRouter,
+  publicTutorRouter,
+  tutorRouter,
+} from "./modules/tutor/tutor.route";
 import { isHttpError } from "./utils/httpError";
 
 const app = express();
@@ -22,6 +26,8 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 // API v1 routes
 app.use("/api/student", studentRouter);
 app.use("/api/tutor", tutorRouter);
+app.use("/api/tutors", publicTutorRouter);
+app.use("/api/categories", publicCategoriesRouter);
 app.use("/api/admin", adminRouter);
 app.get("/api/test", (req, res) => {
   res.json({ message: "Skill Bridge API is running" });

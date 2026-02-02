@@ -83,12 +83,17 @@ export const updateMyProfile = asyncHandler(async (req, res) => {
 
 export const setAvailability = asyncHandler(async (req, res) => {
   const userId = requireUserId(req);
-  const payload = {
-    ...req.body,
-    availableFrom: toDate(req.body?.availableFrom) ?? req.body?.availableFrom,
-    availableTo: toDate(req.body?.availableTo) ?? req.body?.availableTo,
-  };
-  const tutor = await tutorService.setMyAvailability(userId, payload);
+  const input = { ...req.body };
+
+  // Transform dates if they are present in the body
+  if ("availableFrom" in input) {
+    input.availableFrom = toDate(input.availableFrom);
+  }
+  if ("availableTo" in input) {
+    input.availableTo = toDate(input.availableTo);
+  }
+
+  const tutor = await tutorService.setMyAvailability(userId, input);
   res.json({ success: true, data: tutor });
 });
 
@@ -113,7 +118,7 @@ export const listMySessions = asyncHandler(async (req, res) => {
     ...(to !== undefined ? { to } : {}),
     ...(studentSearch !== undefined ? { studentSearch } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const getMySession = asyncHandler(async (req, res) => {
@@ -149,7 +154,7 @@ export const listMyReviews = asyncHandler(async (req, res) => {
     ...(minRating !== undefined ? { minRating } : {}),
     ...(maxRating !== undefined ? { maxRating } : {}),
   });
-  res.json({ success: true, ...result });
+  res.json({ success: true, data: result });
 });
 
 export const getDashboardStats = asyncHandler(async (req, res) => {
@@ -161,4 +166,33 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
 export const listCategories = asyncHandler(async (_req, res) => {
   const categories = await tutorService.listCategories();
   res.json({ success: true, data: categories });
+});
+
+// -------------------------
+// Public Tutor Endpoints
+// -------------------------
+
+export const listPublicTutors = asyncHandler(async (req, res) => {
+  const page = toNumber(req.query.page);
+  const limit = toNumber(req.query.limit);
+  const search = asString(req.query.search);
+  const category = asString(req.query.category);
+
+  const result = await tutorService.listTutors({
+    ...(page !== undefined ? { page } : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(search !== undefined ? { search } : {}),
+    ...(category !== undefined ? { category } : {}),
+  });
+  res.json({ success: true, data: result });
+});
+
+export const getPublicTutor = asyncHandler(async (req, res) => {
+  const tutorId = getParam(req, "id");
+  if (!tutorId) throw httpErrors.badRequest("Tutor ID is required.");
+
+  const tutor = await tutorService.getTutorById(tutorId);
+  if (!tutor) throw httpErrors.notFound("Tutor not found.");
+
+  res.json({ success: true, data: tutor });
 });

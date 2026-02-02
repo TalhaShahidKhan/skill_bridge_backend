@@ -13,7 +13,7 @@ type PageMeta = {
   totalPages: number;
 };
 
-function toPageMeta(page: number, limit: number, total: number): PageMeta {
+function toPagination(page: number, limit: number, total: number) {
   return {
     page,
     limit,
@@ -167,7 +167,16 @@ export async function browseTutors(input: BrowseTutorsInput = {}) {
   const q = input.search?.trim();
 
   const where: Prisma.TutorWhereInput = {
-    ...(input.categoryId ? { categoryId: input.categoryId } : {}),
+    ...(input.categoryId
+      ? {
+          category: {
+            OR: [
+              { categoryId: { equals: input.categoryId } },
+              { name: { equals: input.categoryId, mode: "insensitive" } },
+            ],
+          },
+        }
+      : {}),
     ...(input.group ? { group: input.group } : {}),
     ...(typeof input.onlyAvailable === "boolean"
       ? { isAvailable: input.onlyAvailable }
@@ -189,7 +198,7 @@ export async function browseTutors(input: BrowseTutorsInput = {}) {
     ...(q
       ? {
           OR: [
-            { subject: { contains: q, mode: "insensitive" } },
+            { subjects: { hasSome: [q] } },
             { user: { name: { contains: q, mode: "insensitive" } } },
           ],
         }
@@ -221,11 +230,10 @@ export async function browseTutors(input: BrowseTutorsInput = {}) {
     const avgRating = ratings.length
       ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length
       : 0;
-    const { reviews: _ignored, ...rest } = t as any;
-    return { ...rest, avgRating, reviewsCount: ratings.length };
+    return { ...t, avgRating, reviewsCount: ratings.length };
   });
 
-  return { meta: toPageMeta(page, limit, total), data };
+  return { pagination: toPagination(page, limit, total), data };
 }
 
 export async function getTutorDetails(tutorId: string) {
@@ -357,7 +365,7 @@ export async function listMyBookings(
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: bookings };
+  return { pagination: toPagination(page, limit, total), data: bookings };
 }
 
 export async function getMyBookingById(userId: string, bookingId: string) {
@@ -482,5 +490,39 @@ export async function listMyReviews(
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: reviews };
+  return { pagination: toPagination(page, limit, total), data: reviews };
+}
+
+export async function getMyDashboardStats(userId: string) {
+  const student = await prisma.student.findUnique({
+    where: { userId },
+    select: { studentId: true },
+  });
+  if (!student)
+    throw httpErrors.notFound(
+      "Student profile not found. Create your profile first.",
+    );
+
+  const [totalBookings, completedBookings, pendingBookings, reviewCount] =
+    await prisma.$transaction([
+      prisma.booking.count({ where: { studentId: student.studentId } }),
+      prisma.booking.count({
+        where: { studentId: student.studentId, status: "COMPLETED" },
+      }),
+      prisma.booking.count({
+        where: { studentId: student.studentId, status: "CONFIRMED" },
+      }),
+      prisma.review.count({ where: { studentId: student.studentId } }),
+    ]);
+
+  return {
+    bookings: {
+      total: totalBookings,
+      completed: completedBookings,
+      pending: pendingBookings,
+    },
+    reviews: {
+      count: reviewCount,
+    },
+  };
 }

@@ -67,7 +67,7 @@ router.get(
   tutorController.getDashboardStats,
 );
 
-// Categories helper
+// Categories helper (Protected for tutor dashboard if needed specific context, or just general)
 router.get(
   "/categories",
   requireAuth,
@@ -76,3 +76,14 @@ router.get(
 );
 
 export const tutorRouter = router;
+
+// Public Routes
+const publicRouter = Router();
+publicRouter.get("/", tutorController.listPublicTutors);
+publicRouter.get("/:id", tutorController.getPublicTutor);
+
+export const publicTutorRouter = publicRouter;
+
+const catRouter = Router();
+catRouter.get("/", tutorController.listCategories);
+export const publicCategoriesRouter = catRouter;

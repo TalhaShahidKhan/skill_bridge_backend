@@ -10,7 +10,7 @@ type PageMeta = {
   totalPages: number;
 };
 
-function toPageMeta(page: number, limit: number, total: number): PageMeta {
+function toPagination(page: number, limit: number, total: number) {
   return {
     page,
     limit,
@@ -62,7 +62,7 @@ export type AdminListUsersInput = {
 
 export async function listUsers(
   input: AdminListUsersInput = {},
-): Promise<{ meta: PageMeta; data: unknown[] }> {
+): Promise<{ pagination: PageMeta; users: unknown[] }> {
   const { page, limit, skip } = normalizePagination(input);
 
   const where: Prisma.UserWhereInput = {
@@ -103,7 +103,10 @@ export async function listUsers(
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: users as unknown[] };
+  return {
+    pagination: toPagination(page, limit, total),
+    users: users as unknown[],
+  };
 }
 
 export async function getUserById(userId: string) {
@@ -222,7 +225,7 @@ export async function listReviews(input: AdminListReviewsInput = {}) {
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: reviews };
+  return { pagination: toPagination(page, limit, total), data: reviews };
 }
 
 export async function deleteReview(reviewId: string) {
@@ -300,7 +303,7 @@ export async function listBookings(input: AdminListBookingsInput = {}) {
     }),
   ]);
 
-  return { meta: toPageMeta(page, limit, total), data: bookings };
+  return { pagination: toPagination(page, limit, total), data: bookings };
 }
 
 export async function setTutorFeatured(tutorId: string, isFeatured: boolean) {
@@ -499,7 +502,7 @@ export async function getAnalytics(input: AdminAnalyticsInput = {}) {
         reviewsCount: aggAny._count?._all ?? 0,
         tutor: tutor
           ? {
-              subject: tutor.subject,
+              subjects: tutor.subjects,
               group: tutor.group,
               pricePerDay: tutor.pricePerDay,
               isFeatured:

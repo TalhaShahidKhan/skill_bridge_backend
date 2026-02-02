@@ -34,13 +34,14 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({ user, url, token }) => {
       try {
+        const resetUrl = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
         const mailOptions = {
           from: process.env.EMAIL_HOST_USER,
           to: user.email,
           subject: "Password Reset Request",
-          text: `Click here to reset your password: ${url}`,
+          text: `Click here to reset your password: ${resetUrl}`,
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -73,12 +74,12 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
+        const verificationUrl = `${process.env.APP_URL}/auth/verify-email?token=${token}`;
         const mailOptions = {
           from: process.env.EMAIL_HOST_USER,
           to: user.email,
           subject: "Verify your email address",
-          text: `Please click on the following link to verify your email address: ${url}`,
+          text: `Please click on the following link to verify your email address: ${verificationUrl}`,
         };
         await sendMail(mailOptions);
       } catch (error) {

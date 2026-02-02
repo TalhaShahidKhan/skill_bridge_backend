@@ -9,6 +9,12 @@ const router = Router();
 router.get("/tutors", studentController.browseTutors);
 router.get("/tutors/:id", studentController.getTutorDetails);
 router.get("/categories", studentController.listCategories);
+router.get(
+  "/dashboard",
+  requireAuth,
+  requireRole(UserRole.STUDENT),
+  studentController.getDashboardStats,
+);
 
 // Profile
 router.get(
