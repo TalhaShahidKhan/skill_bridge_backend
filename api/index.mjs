@@ -79,8 +79,8 @@ var UserStatus = {
 
 // src/lib/prisma.ts
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 import "dotenv/config";
+import { Pool } from "pg";
 
 // generated/prisma/internal/class.ts
 import * as runtime from "@prisma/client/runtime/client";
@@ -138,9 +138,14 @@ var connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   console.warn("DATABASE_URL is not defined.");
 }
-var pool = new Pool({ connectionString: connectionString || "" });
+var globalForPrisma = global;
+var pool = globalForPrisma.pool ?? new Pool({ connectionString: connectionString || "" });
 var adapter = new PrismaPg(pool);
-var prisma = new PrismaClient({ adapter });
+var prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+  globalForPrisma.pool = pool;
+}
 
 // src/lib/auth.ts
 if (!process.env.APP_URL) {
@@ -407,7 +412,7 @@ async function listUsers(input = {}) {
       }
     }
   };
-  const [total, users] = await prisma.$transaction([
+  const [total, users] = await Promise.all([
     prisma.user.count({ where }),
     prisma.user.findMany({
       where,
@@ -490,7 +495,7 @@ async function listReviews(input = {}) {
       }
     }
   };
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
@@ -546,7 +551,7 @@ async function listBookings(input = {}) {
       ]
     } : {}
   };
-  const [total, bookings] = await prisma.$transaction([
+  const [total, bookings] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -619,7 +624,7 @@ async function getAnalytics(input = {}) {
     bookingsByStatus,
     reviewRatingAgg,
     topTutorAgg
-  ] = await prisma.$transaction([
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.student.count(),
     prisma.tutor.count(),
@@ -1124,7 +1129,7 @@ async function browseTutors(input = {}) {
       ]
     } : {}
   };
-  const [total, tutors] = await prisma.$transaction([
+  const [total, tutors] = await Promise.all([
     prisma.tutor.count({ where }),
     prisma.tutor.findMany({
       where,
@@ -1222,7 +1227,7 @@ async function listMyBookings(userId, input = {}) {
       }
     }
   };
-  const [total, bookings] = await prisma.$transaction([
+  const [total, bookings] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -1322,7 +1327,7 @@ async function listMyReviews(userId, input = {}) {
     );
   const { page, limit, skip } = normalizePagination2(input);
   const where = { studentId: student.studentId };
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
@@ -1782,7 +1787,7 @@ async function listMySessions(userId, input = {}) {
       }
     } : {}
   };
-  const [total, sessions] = await prisma.$transaction([
+  const [total, sessions] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -1859,7 +1864,7 @@ async function listMyReviews3(userId, input = {}) {
       }
     }
   };
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
@@ -1947,7 +1952,7 @@ async function listTutors(input = {}) {
       }
     } : {}
   };
-  const [total, tutors] = await prisma.$transaction([
+  const [total, tutors] = await Promise.all([
     prisma.tutor.count({ where }),
     prisma.tutor.findMany({
       where,

@@ -318,7 +318,7 @@ export async function listMySessions(
       : {}),
   };
 
-  const [total, sessions] = await prisma.$transaction([
+  const [total, sessions] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -422,7 +422,7 @@ export async function listMyReviews(
     }),
   };
 
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
@@ -527,7 +527,7 @@ export async function listTutors(
       : {}),
   };
 
-  const [total, tutors] = await prisma.$transaction([
+  const [total, tutors] = await Promise.all([
     prisma.tutor.count({ where }),
     prisma.tutor.findMany({
       where,

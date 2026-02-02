@@ -205,7 +205,7 @@ export async function browseTutors(input: BrowseTutorsInput = {}) {
       : {}),
   };
 
-  const [total, tutors] = await prisma.$transaction([
+  const [total, tutors] = await Promise.all([
     prisma.tutor.count({ where }),
     prisma.tutor.findMany({
       where,
@@ -351,7 +351,7 @@ export async function listMyBookings(
     }),
   };
 
-  const [total, bookings] = await prisma.$transaction([
+  const [total, bookings] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -476,7 +476,7 @@ export async function listMyReviews(
   const { page, limit, skip } = normalizePagination(input);
   const where: Prisma.ReviewWhereInput = { studentId: student.studentId };
 
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,

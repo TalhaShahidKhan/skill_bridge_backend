@@ -80,7 +80,7 @@ export async function listUsers(
     }),
   };
 
-  const [total, users] = await prisma.$transaction([
+  const [total, users] = await Promise.all([
     prisma.user.count({ where }),
     prisma.user.findMany({
       where,
@@ -210,7 +210,7 @@ export async function listReviews(input: AdminListReviewsInput = {}) {
     }),
   };
 
-  const [total, reviews] = await prisma.$transaction([
+  const [total, reviews] = await Promise.all([
     prisma.review.count({ where }),
     prisma.review.findMany({
       where,
@@ -288,7 +288,7 @@ export async function listBookings(input: AdminListBookingsInput = {}) {
       : {}),
   };
 
-  const [total, bookings] = await prisma.$transaction([
+  const [total, bookings] = await Promise.all([
     prisma.booking.count({ where }),
     prisma.booking.findMany({
       where,
@@ -399,7 +399,7 @@ export async function getAnalytics(input: AdminAnalyticsInput = {}) {
     bookingsByStatus,
     reviewRatingAgg,
     topTutorAgg,
-  ] = await prisma.$transaction([
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.student.count(),
     prisma.tutor.count(),
