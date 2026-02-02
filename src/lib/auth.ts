@@ -13,10 +13,6 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
-  cookie: {
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production" ? true : false,
-  },
   user: {
     additionalFields: {
       role: {
@@ -94,8 +90,5 @@ export const auth = betterAuth({
         throw error; // Re-throw for verification - this is critical for the signup flow
       }
     },
-  },
-  advanced: {
-    useSecureCookies: true,
   },
 });
