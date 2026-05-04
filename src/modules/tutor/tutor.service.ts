@@ -383,6 +383,32 @@ export async function markSessionCompleted(userId: string, bookingId: string) {
   });
 }
 
+export async function updateSessionMeetingLink(
+  userId: string,
+  bookingId: string,
+  meetingLink: string,
+) {
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId },
+    select: { tutorId: true },
+  });
+  if (!tutor)
+    throw httpErrors.notFound(
+      "Tutor profile not found. Create your profile first.",
+    );
+
+  const booking = await prisma.booking.findFirst({
+    where: { bookingId, tutorId: tutor.tutorId },
+    select: { bookingId: true },
+  });
+  if (!booking) throw httpErrors.notFound("Booking not found.");
+
+  return prisma.booking.update({
+    where: { bookingId },
+    data: { meetingLink },
+  });
+}
+
 // -------------------------
 // Reviews / ratings (tutor-owned)
 // -------------------------

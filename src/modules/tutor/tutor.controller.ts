@@ -137,6 +137,21 @@ export const markCompleted = asyncHandler(async (req, res) => {
   res.json({ success: true, data: session });
 });
 
+export const updateMeetingLink = asyncHandler(async (req, res) => {
+  const userId = requireUserId(req);
+  const bookingId = getParam(req, "id") ?? getParam(req, "bookingId");
+  if (!bookingId) throw httpErrors.badRequest("bookingId is required.");
+  const { meetingLink } = req.body;
+  if (!meetingLink) throw httpErrors.badRequest("meetingLink is required.");
+
+  const session = await tutorService.updateSessionMeetingLink(
+    userId,
+    bookingId,
+    meetingLink,
+  );
+  res.json({ success: true, data: session });
+});
+
 // -------------------------
 // Reviews & dashboard
 // -------------------------

@@ -14,6 +14,7 @@ model Booking {
     time DateTime
     duration Int
     status BookingStatus @default(CONFIRMED)
+    meetingLink String?
     notes String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

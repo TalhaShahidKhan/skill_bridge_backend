@@ -52,6 +52,12 @@ router.patch(
   requireRole(UserRole.TUTOR),
   tutorController.markCompleted,
 );
+router.patch(
+  "/sessions/:id/meeting-link",
+  requireAuth,
+  requireRole(UserRole.TUTOR),
+  tutorController.updateMeetingLink,
+);
 
 // Reviews & dashboard
 router.get(
