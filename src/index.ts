@@ -9,6 +9,7 @@ import {
   publicTutorRouter,
   tutorRouter,
 } from "./modules/tutor/tutor.route";
+import { paymentRouter } from "./modules/payment/payment.route";
 import { isHttpError } from "./utils/httpError";
 
 const app = express();
@@ -23,6 +24,8 @@ app.use(
 );
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
+// Stripe webhook needs raw body, must come before express.json()
+app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 // API v1 routes
 app.use("/api/student", studentRouter);
@@ -30,6 +33,7 @@ app.use("/api/tutor", tutorRouter);
 app.use("/api/tutors", publicTutorRouter);
 app.use("/api/categories", publicCategoriesRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/payment", paymentRouter);
 app.get("/", (req, res) => {
   res.json({ message: "Skill Bridge API is running" });
 });

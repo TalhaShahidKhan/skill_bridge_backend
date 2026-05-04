@@ -21,6 +21,7 @@ model Tutor {
     category      Category  @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
     bookings      Booking[]
     reviews       Review[]
+    payments      Payment[]
 
     @@map("tutors")
 }

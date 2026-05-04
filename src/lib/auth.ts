@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { sendMail } from "../utils/sendMail";
+import { emailTemplates } from "../utils/emailTemplates";
 import { UserRole, UserStatus } from "./constants";
 import { prisma } from "./prisma";
 
@@ -50,6 +51,7 @@ export const auth = betterAuth({
           to: user.email,
           subject: "Password Reset Request",
           text: `Click here to reset your password: ${resetUrl}`,
+          html: emailTemplates.passwordReset(resetUrl, user.name),
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -57,8 +59,6 @@ export const auth = betterAuth({
           `Failed to send password reset email to ${user.email}:`,
           error,
         );
-        // Don't throw - allow the reset flow to continue even if email fails
-        // The user can request a new reset link if needed
       }
     },
     onPasswordReset: async ({ user }, request) => {
@@ -68,6 +68,7 @@ export const auth = betterAuth({
           to: user.email,
           subject: "Password Reset Successful",
           text: "Your password has been reset successfully.",
+          html: emailTemplates.passwordResetSuccess(user.name),
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -75,7 +76,6 @@ export const auth = betterAuth({
           `Failed to send password reset confirmation to ${user.email}:`,
           error,
         );
-        // Don't throw - this is a notification, not critical for the flow
       }
     },
   },
@@ -88,6 +88,7 @@ export const auth = betterAuth({
           to: user.email,
           subject: "Verify your email address",
           text: `Please click on the following link to verify your email address: ${verificationUrl}`,
+          html: emailTemplates.verification(verificationUrl, user.name),
         };
         await sendMail(mailOptions);
       } catch (error) {
@@ -95,7 +96,7 @@ export const auth = betterAuth({
           `Failed to send verification email to ${user.email}:`,
           error,
         );
-        throw error; // Re-throw for verification - this is critical for the signup flow
+        throw error;
       }
     },
   },
