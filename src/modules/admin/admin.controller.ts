@@ -240,3 +240,44 @@ export const deleteCategory = asyncHandler(async (req, res) => {
   const category = await adminService.deleteCategory(categoryId);
   res.json({ success: true, data: category });
 });
+
+export const deleteBooking = asyncHandler(async (req, res) => {
+  const bookingId = getParam(req, "id") ?? getParam(req, "bookingId");
+  if (!bookingId) throw httpErrors.badRequest("bookingId is required.");
+  const result = await adminService.deleteBooking(bookingId);
+  res.json({ success: true, data: result });
+});
+
+export const listPayments = asyncHandler(async (req, res) => {
+  const page = toNumber(req.query.page);
+  const limit = toNumber(req.query.limit);
+  const studentId = asString(req.query.studentId);
+  const tutorId = asString(req.query.tutorId);
+  const search = asString(req.query.search);
+
+  const result = await adminService.listPayments({
+    ...(page !== undefined ? { page } : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(studentId !== undefined ? { studentId } : {}),
+    ...(tutorId !== undefined ? { tutorId } : {}),
+    ...(search !== undefined ? { search } : {}),
+  });
+  res.json({ success: true, data: result });
+});
+
+export const updateTutorProfile = asyncHandler(async (req, res) => {
+  const tutorId = getParam(req, "id") ?? getParam(req, "tutorId");
+  if (!tutorId) throw httpErrors.badRequest("tutorId is required.");
+  const result = await adminService.updateTutorProfileAdmin(tutorId, req.body);
+  res.json({ success: true, data: result });
+});
+
+export const updateStudentProfile = asyncHandler(async (req, res) => {
+  const studentId = getParam(req, "id") ?? getParam(req, "studentId");
+  if (!studentId) throw httpErrors.badRequest("studentId is required.");
+  const result = await adminService.updateStudentProfileAdmin(
+    studentId,
+    req.body,
+  );
+  res.json({ success: true, data: result });
+});

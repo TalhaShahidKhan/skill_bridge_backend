@@ -306,6 +306,97 @@ export async function listBookings(input: AdminListBookingsInput = {}) {
   return { pagination: toPagination(page, limit, total), data: bookings };
 }
 
+export async function deleteBooking(bookingId: string) {
+  return prisma.booking.delete({ where: { bookingId } });
+}
+
+// -------------------------
+// Payment Management
+// -------------------------
+
+export type AdminListPaymentsInput = {
+  page?: number;
+  limit?: number;
+  studentId?: string;
+  tutorId?: string;
+  search?: string;
+};
+
+export async function listPayments(input: AdminListPaymentsInput = {}) {
+  const { page, limit, skip } = normalizePagination(input);
+
+  const where: Prisma.PaymentWhereInput = {
+    ...(input.studentId ? { studentId: input.studentId } : {}),
+    ...(input.tutorId ? { tutorId: input.tutorId } : {}),
+    ...(input.search?.trim()
+      ? {
+          OR: [
+            {
+              student: {
+                user: {
+                  OR: [
+                    { name: { contains: input.search, mode: "insensitive" } },
+                    { email: { contains: input.search, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+            {
+              tutor: {
+                user: {
+                  OR: [
+                    { name: { contains: input.search, mode: "insensitive" } },
+                    { email: { contains: input.search, mode: "insensitive" } },
+                  ],
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, payments] = await Promise.all([
+    prisma.payment.count({ where }),
+    prisma.payment.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+      include: {
+        student: { include: { user: true } },
+        tutor: { include: { user: true } },
+      },
+    }),
+  ]);
+
+  return { pagination: toPagination(page, limit, total), data: payments };
+}
+
+// -------------------------
+// Global Profile Manipulation
+// -------------------------
+
+export async function updateTutorProfileAdmin(
+  tutorId: string,
+  data: Prisma.TutorUpdateInput,
+) {
+  return prisma.tutor.update({
+    where: { tutorId },
+    data,
+  });
+}
+
+export async function updateStudentProfileAdmin(
+  studentId: string,
+  data: Prisma.StudentUpdateInput,
+) {
+  return prisma.student.update({
+    where: { studentId },
+    data,
+  });
+}
+
 export async function setTutorFeatured(tutorId: string, isFeatured: boolean) {
   return prisma.tutor.update({
     where: { tutorId },
@@ -394,6 +485,7 @@ export async function getAnalytics(input: AdminAnalyticsInput = {}) {
     categoriesTotal,
     bookingsTotal,
     reviewsTotal,
+    revenueAgg,
     usersByRole,
     usersByStatus,
     bookingsByStatus,
@@ -406,6 +498,7 @@ export async function getAnalytics(input: AdminAnalyticsInput = {}) {
     prisma.category.count(),
     prisma.booking.count(),
     prisma.review.count(),
+    prisma.payment.aggregate({ _sum: { amount: true } }),
     prisma.user.groupBy({
       by: ["role"],
       _count: { _all: true },
@@ -458,6 +551,7 @@ export async function getAnalytics(input: AdminAnalyticsInput = {}) {
       categories: categoriesTotal,
       bookings: bookingsTotal,
       reviews: reviewsTotal,
+      totalRevenue: revenueAgg._sum.amount ?? 0,
     },
     users: {
       byRole: usersByRole.map((r) => ({

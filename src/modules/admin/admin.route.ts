@@ -55,12 +55,39 @@ router.delete(
   adminController.deleteReview,
 );
 
-// Bookings management
 router.get(
   "/bookings",
   requireAuth,
   requireAdmin,
   adminController.listBookings,
+);
+router.delete(
+  "/bookings/:id",
+  requireAuth,
+  requireAdmin,
+  adminController.deleteBooking,
+);
+
+// Payments
+router.get(
+  "/payments",
+  requireAuth,
+  requireAdmin,
+  adminController.listPayments,
+);
+
+// Tutor & Student Profiles
+router.patch(
+  "/tutors/:id",
+  requireAuth,
+  requireAdmin,
+  adminController.updateTutorProfile,
+);
+router.patch(
+  "/students/:id",
+  requireAuth,
+  requireAdmin,
+  adminController.updateStudentProfile,
 );
 
 // Tutor moderation

@@ -24,9 +24,24 @@ app.use(
 );
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
+
+// Health checks and root routes
+const rootHandler = (req: express.Request, res: express.Response) => {
+  res.json({
+    success: true,
+    message: "Skill Bridge API is running",
+    env: process.env.NODE_ENV,
+    time: new Date().toISOString(),
+  });
+};
+
+app.get("/", rootHandler);
+app.get("/api", rootHandler);
+
 // Stripe webhook needs raw body, must come before express.json()
 app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
+
 // API v1 routes
 app.use("/api/student", studentRouter);
 app.use("/api/tutor", tutorRouter);
@@ -34,14 +49,16 @@ app.use("/api/tutors", publicTutorRouter);
 app.use("/api/categories", publicCategoriesRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/payment", paymentRouter);
-app.get("/", (req, res) => {
-  res.json({ message: "Skill Bridge API is running" });
-});
+
 // 404 handler
-app.use((_req, res) => {
+app.use((req, res) => {
+  console.warn(`404 Not Found: ${req.method} ${req.url}`);
   res.status(404).json({
     success: false,
-    error: { code: "NOT_FOUND", message: "Route not found." },
+    error: {
+      code: "NOT_FOUND",
+      message: `Route ${req.method} ${req.url} not found.`,
+    },
   });
 });
 
