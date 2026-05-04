@@ -94,10 +94,10 @@ export async function upsertMyStudentProfile(
       group: input.group ?? ("NONE" as Group),
     },
     update: {
-      class: input.class,
-      institute: input.institute,
-      address: input.address,
-      phone: input.phone,
+      ...(input.class ? { class: input.class } : {}),
+      ...(input.institute ? { institute: input.institute } : {}),
+      ...(input.address ? { address: input.address } : {}),
+      ...(input.phone ? { phone: input.phone } : {}),
       ...(Object.prototype.hasOwnProperty.call(input, "profilePic")
         ? { profilePic: input.profilePic ?? null }
         : {}),

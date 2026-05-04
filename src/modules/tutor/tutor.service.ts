@@ -129,10 +129,10 @@ export async function upsertMyTutorProfile(
       isAvailable: true,
     },
     update: {
-      subjects: input.subjects,
-      experience: input.experience,
-      address: input.address,
-      phone: input.phone,
+      ...(input.subjects ? { subjects: input.subjects } : {}),
+      ...(typeof input.experience === "number" ? { experience: input.experience } : {}),
+      ...(input.address ? { address: input.address } : {}),
+      ...(input.phone ? { phone: input.phone } : {}),
       ...(Object.prototype.hasOwnProperty.call(input, "profilePic")
         ? { profilePic: input.profilePic ?? null }
         : {}),
@@ -142,9 +142,9 @@ export async function upsertMyTutorProfile(
       ...(Object.prototype.hasOwnProperty.call(input, "institute")
         ? { institute: input.institute ?? null }
         : {}),
-      group: input.group,
-      categoryId: input.categoryId,
-      pricePerDay: input.pricePerDay,
+      ...(input.group ? { group: input.group } : {}),
+      ...(input.categoryId ? { categoryId: input.categoryId } : {}),
+      ...(typeof input.pricePerDay === "number" ? { pricePerDay: input.pricePerDay } : {}),
     },
     include: { user: true, category: true },
   });

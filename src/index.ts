@@ -30,7 +30,7 @@ app.use("/api/tutor", tutorRouter);
 app.use("/api/tutors", publicTutorRouter);
 app.use("/api/categories", publicCategoriesRouter);
 app.use("/api/admin", adminRouter);
-app.get("/api/test", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "Skill Bridge API is running" });
 });
 // 404 handler
