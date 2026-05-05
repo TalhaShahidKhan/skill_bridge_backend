@@ -41,7 +41,7 @@ export async function createCheckoutSession(userId: string, input: {
       },
     ],
     mode: "payment",
-    success_url: `${process.env.APP_URL}/student/bookings?success=true`,
+    success_url: `${process.env.APP_URL}/student/bookings?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.APP_URL}/tutors/${input.tutorId}?canceled=true`,
     customer_email: student.user.email,
     metadata: {
@@ -69,6 +69,63 @@ export async function createCheckoutSession(userId: string, input: {
   return { sessionId: session.id, url: session.url };
 }
 
+export async function fulfillOrder(sessionId: string, session?: any) {
+  if (!session) {
+    session = await stripe.checkout.sessions.retrieve(sessionId);
+  }
+
+  if (session.payment_status !== "paid") {
+    return { success: false, message: "Payment not completed" };
+  }
+
+  const metadata = session.metadata;
+  if (!metadata) {
+    return { success: false, message: "No metadata found in session" };
+  }
+
+  const { studentId, tutorId, date, time, duration, notes } = metadata;
+
+  // Check if already fulfilled to prevent double booking
+  const existingPayment = await prisma.payment.findUnique({
+    where: { stripeSessionId: sessionId },
+  });
+
+  if (existingPayment?.status === "COMPLETED" && existingPayment.bookingId) {
+    return { success: true, message: "Order already fulfilled" };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Create the booking
+    const booking = await tx.booking.create({
+      data: {
+        studentId,
+        tutorId,
+        date: new Date(date),
+        time: new Date(time),
+        duration: Number(duration),
+        notes: notes || null,
+        status: "CONFIRMED",
+      },
+    });
+
+    // 2. Update the payment
+    await tx.payment.update({
+      where: { stripeSessionId: sessionId },
+      data: {
+        status: "COMPLETED",
+        bookingId: booking.bookingId,
+      },
+    });
+  });
+
+  console.log(`Booking and Payment created successfully for session ${sessionId}`);
+  return { success: true };
+}
+
+export async function verifySession(sessionId: string) {
+  return fulfillOrder(sessionId);
+}
+
 export async function handleWebhook(signature: string, payload: any) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
   let event: any;
@@ -82,37 +139,7 @@ export async function handleWebhook(signature: string, payload: any) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as any;
-    const metadata = session.metadata;
-
-    if (metadata) {
-      const { studentId, tutorId, date, time, duration, notes } = metadata;
-
-      await prisma.$transaction(async (tx) => {
-        // 1. Create the booking only now
-        const booking = await tx.booking.create({
-          data: {
-            studentId,
-            tutorId,
-            date: new Date(date),
-            time: new Date(time),
-            duration: Number(duration),
-            notes: notes || null,
-            status: "CONFIRMED",
-          },
-        });
-
-        // 2. Update the payment and link it to the new booking
-        await tx.payment.update({
-          where: { stripeSessionId: session.id },
-          data: {
-            status: "COMPLETED",
-            bookingId: booking.bookingId,
-          },
-        });
-      });
-
-      console.log(`Booking and Payment created successfully for student ${studentId}`);
-    }
+    await fulfillOrder(session.id, session);
   }
 
   return { received: true };

@@ -81,11 +81,14 @@ The platform supports:
 - **Payment History** – Dedicated dashboard to track all earned fees and transaction details.
 - **Session Management**
 
-### Admin Features
+### Admin Features (God Mode)
 
-- **Analytics Dashboard**
-- **User & Review Moderation**
-- **Category Management**
+- **Total Platform Analytics** – Track global user growth, bookings, and real-time revenue stats.
+- **Financial Oversight** – Dedicated audit trail for all Stripe payments.
+- **Global User Moderation** – Suspend, activate, or hard-delete any user account.
+- **Force Booking Management** – List and delete problematic booking records.
+- **Direct Profile Moderation** – Force-update bio, subjects, or academic info for any tutor or student.
+- **Category Management** – Full CRUD for platform subject hierarchies.
 
 ### Payment System (Stripe)
 

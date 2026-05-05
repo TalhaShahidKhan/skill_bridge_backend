@@ -19,6 +19,13 @@ router.post(
   paymentController.createCheckoutSession,
 );
 
+router.post(
+  "/verify-session/:sessionId",
+  requireAuth,
+  requireRole(UserRole.STUDENT),
+  paymentController.verifySession,
+);
+
 router.get(
   "/tutor-payments",
   requireAuth,

@@ -45,6 +45,14 @@ export const handleWebhook = async (req: Request, res: Response) => {
   }
 };
 
+export const verifySession = asyncHandler(async (req, res) => {
+  const { sessionId } = req.params;
+  if (!sessionId) throw httpErrors.badRequest("Session ID is required.");
+
+  const result = await paymentService.verifySession(sessionId as string);
+  res.json(result);
+});
+
 export const getTutorPayments = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) throw httpErrors.unauthorized("Authentication required.");
